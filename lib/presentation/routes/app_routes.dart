@@ -3,6 +3,7 @@ import '../pages/home/home_page.dart';
 import '../pages/test_font_page.dart';
 import '../pages/settings/settings_page.dart';
 import '../pages/logs/logs_page.dart';
+import '../pages/form_builder/form_builder_page.dart';
 
 class AppRoutes {
   // مسیرهای اصلی برنامه - Main application routes
@@ -37,6 +38,15 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SettingsPage());
       case AppRoutes.logs:
         return MaterialPageRoute(builder: (_) => const LogsPage());
+      case formBuilder:
+        // پارامترها از arguments دریافت می‌شود
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => FormBuilderPage(
+            formId: args?['formId'] as int?,
+            userId: args?['userId'] as int? ?? 1, // پیش‌فرض
+          ),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

@@ -3,6 +3,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'presentation/controllers/settings_controller.dart';
 import 'presentation/controllers/logs_controller.dart';
+import 'core/providers/form_builder_provider.dart';
+import 'core/providers/widget_library_provider.dart';
+import 'core/providers/form_list_provider.dart';
 import 'presentation/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/logger/logger_service.dart';
@@ -48,6 +51,9 @@ class DataSaveApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => SettingsController()),
         ChangeNotifierProvider(create: (_) => LogsController()),
+        ChangeNotifierProvider(create: (_) => FormBuilderProvider()),
+        ChangeNotifierProvider(create: (_) => WidgetLibraryProvider()),
+        ChangeNotifierProvider(create: (_) => FormListProvider()),
       ],
       child: MaterialApp(
         title: 'DataSave - فرم‌ساز هوشمند',

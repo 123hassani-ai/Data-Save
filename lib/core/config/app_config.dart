@@ -8,13 +8,13 @@ class AppConfig {
   static const String dbName = 'datasave_db';
   static const String dbUser = 'root';
   static const String dbPassword = '';
-  static const int dbPort = 3306;
+  static const int dbPort = 3307;
   
   // تنظیمات API
   static String get apiBaseUrl {
     return isProduction 
         ? 'https://api.datasave.ir'
-        : 'http://localhost:8080';
+        : 'http://localhost/datasave/backend';
   }
   
   // تنظیمات دیباگ

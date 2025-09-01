@@ -1,14 +1,234 @@
-# مشخصات کامپوننت‌ها - Component Specifications
+# مشخصات اجزای UI - Component Specifications
 
 ## 📊 Document Information
 - **Created:** 2025-09-01
-- **Last Updated:** 2025-09-01
-- **Version:** 1.0
+- **Last Updated:** 2025-09-01 
+- **Version:** 2.1
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/lib/presentation/widgets/`, `/lib/widgets/`
+- **Related Files:** [ui-components-library.md](../04-Flutter-Frontend/ui-components-library.md), [design-system.md](design-system.md)
 
 ## 🎯 Overview
-مستندات کامل کامپوننت‌های UI در DataSave شامل مشخصات فنی، نحوه استفاده، و نمونه کدها با پشتیبانی کامل RTL و Persian.
+تمامی مشخصات طراحی و اجزای رابط کاربری DataSave با تمرکز بر تجربه کاربری فارسی و حالت RTL.
+
+## 📋 Table of Contents
+- [Form Builder UI](#form-builder-ui)
+- [Widget Library Panel](#widget-library-panel)
+- [Form Canvas](#form-canvas)
+- [App Bar Improvements](#app-bar-improvements)
+- [Category Tabs](#category-tabs)
+- [Search Bar](#search-bar)
+- [Color Scheme](#color-scheme)
+
+## 🏗️ Form Builder UI
+
+### Main Layout Structure
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Enhanced AppBar                       │
+├─────────────────┬─────────────────┬─────────────────────┤
+│                 │                 │                     │
+│  Widget Library │   Form Canvas   │  Properties Panel   │
+│     (320px)     │   (Flexible)    │    (320px)          │
+│                 │                 │                     │
+├─────────────────┼─────────────────┼─────────────────────┤
+│                       Bottom Bar                        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Key Improvements Made:
+1. **Enhanced AppBar**: گرادیان زیبا با آیکون‌های بهتر
+2. **Modern Search Bar**: پس‌زمینه شفاف و انیمیشن‌های روان
+3. **Gradient Category Tabs**: تب‌های دسته‌بندی با گرادیان
+4. **Improved Canvas**: انیمیشن‌های drag & drop بهتر
+5. **Better Button States**: حالت‌های مختلف دکمه‌ها
+
+## 🎨 Widget Library Panel
+
+### Header Component
+```dart
+Container(
+  height: 70,
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      colors: [
+        AppTheme.primaryColor,
+        AppTheme.primaryColor.withOpacity(0.8),
+      ],
+      begin: Alignment.topRight,
+      end: Alignment.bottomLeft,
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: AppTheme.primaryColor.withOpacity(0.3),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ],
+  ),
+)
+```
+
+### Search Bar Component
+```dart
+Container(
+  margin: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.grey.shade50,
+    borderRadius: BorderRadius.circular(12),
+    border: Border.all(color: Colors.grey.shade300, width: 1),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.05),
+        blurRadius: 4,
+        offset: const Offset(0, 1),
+      ),
+    ],
+  ),
+)
+```
+
+### Category Tabs
+```dart
+AnimatedContainer(
+  duration: const Duration(milliseconds: 200),
+  decoration: BoxDecoration(
+    gradient: isSelected ? LinearGradient(...) : null,
+    color: isSelected ? null : Colors.grey.shade100,
+    borderRadius: BorderRadius.circular(25),
+    boxShadow: isSelected ? [...] : null,
+  ),
+)
+```
+
+## 🎯 Form Canvas
+
+### Empty State Design
+```dart
+AnimatedContainer(
+  duration: const Duration(milliseconds: 200),
+  decoration: BoxDecoration(
+    gradient: isHovering 
+        ? LinearGradient(
+            colors: [
+              colorScheme.primaryContainer.withValues(alpha: 0.1),
+              colorScheme.primaryContainer.withValues(alpha: 0.05),
+            ],
+          )
+        : LinearGradient(
+            colors: [Colors.grey.shade50, Colors.white],
+          ),
+    borderRadius: BorderRadius.circular(12),
+    border: isHovering
+        ? Border.all(color: colorScheme.primary.withValues(alpha: 0.3))
+        : Border.all(color: colorScheme.outline.withValues(alpha: 0.2)),
+  ),
+)
+```
+
+### Drag & Drop Interaction
+- **Hover State**: تغییر پس‌زمینه و حاشیه
+- **Drop Animation**: انیمیشن روان هنگام رها کردن
+- **Visual Feedback**: بازخورد بصری مناسب
+
+## 📱 App Bar Improvements
+
+### Button States
+1. **Preview Button**:
+   - فعال: پس‌زمینه آبی کم‌رنگ
+   - غیرفعال: پس‌زمینه خاکستری
+
+2. **Save Button**:
+   - تغییرات موجود: رنگ آبی با پس‌زمینه
+   - بدون تغییر: شفاف
+
+3. **Publish Button**:
+   - آماده انتشار: سبز با سایه
+   - غیرآماده: خاکستری بدون سایه
+
+### Enhanced Title Section
+```dart
+Row(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(...),
+    ),
+    SizedBox(width: 12),
+    Expanded(child: Column(...)),
+  ],
+)
+```
+
+## 🎨 Color Scheme
+
+### Primary Colors
+- **Primary**: `#2196F3` (آبی DataSave)
+- **Primary Container**: `#E3F2FD`
+- **Success**: `#4CAF50` (سبز موفقیت)
+- **Surface**: `#FAFAFA` (پس‌زمینه سطوح)
+
+### Gradient Usage
+```dart
+LinearGradient(
+  colors: [
+    AppTheme.primaryColor,
+    AppTheme.primaryColor.withOpacity(0.8),
+  ],
+  begin: Alignment.topRight,
+  end: Alignment.bottomLeft,
+)
+```
+
+### Shadow Effects
+```dart
+BoxShadow(
+  color: AppTheme.primaryColor.withOpacity(0.3),
+  blurRadius: 8,
+  offset: const Offset(0, 2),
+)
+```
+
+## 🔄 Animation Specifications
+
+### Transition Durations
+- **Fast**: 200ms (تغییر حالت دکمه‌ها)
+- **Medium**: 300ms (نمایش/مخفی کردن پنل‌ها)
+- **Slow**: 500ms (انتقال‌های پیچیده)
+
+### Easing Curves
+```dart
+Curves.easeInOut // برای اکثر انیمیشن‌ها
+Curves.elasticOut // برای drag & drop
+Curves.fastOutSlowIn // برای Material Design
+```
+
+## 📐 Spacing System
+
+### Standard Spacing
+- **XS**: 4px
+- **S**: 8px
+- **M**: 12px
+- **L**: 16px
+- **XL**: 20px
+- **XXL**: 24px
+
+### Component Padding
+- **Card Padding**: 16px
+- **Button Padding**: horizontal: 20px, vertical: 12px
+- **Input Padding**: horizontal: 16px, vertical: 12px
+
+## 🔄 Related Documentation
+- [UI Components Library](../04-Flutter-Frontend/ui-components-library.md)
+- [Design System](design-system.md)
+- [Persian RTL Implementation](../04-Flutter-Frontend/persian-rtl-implementation.md)
+
+---
+
+*Last updated: 2025-09-01*
 
 ## 📋 Table of Contents
 - [کامپوننت‌های مشترک](#کامپوننتهای-مشترک)

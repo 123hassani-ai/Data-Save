@@ -81,6 +81,18 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  /// پیمایش به فرم‌ساز - Navigate to Form Builder
+  void _navigateToFormBuilder(BuildContext context) {
+    Navigator.of(context).pushNamed(
+      AppRoutes.formBuilder,
+      arguments: {
+        'userId': 1, // شناسه کاربر فعلی - فعلاً ثابت
+        'formId': null, // null برای فرم جدید
+      },
+    );
+    LoggerService.info('HomePage', 'پیمایش به فرم‌ساز - Navigating to Form Builder');
+  }
+
   /// تست سلامت سیستم - Test system health
   Future<void> _testSystemHealth() async {
     final startTime = DateTime.now();
@@ -449,6 +461,12 @@ class _HomePageState extends State<HomePage> {
   Widget _buildQuickActionsCard() {
     return QuickActionsCard(
       actions: [
+        ActionButton(
+          'فرم‌ساز هوشمند',
+          Icons.dashboard_customize,
+          _isLoading ? null : () => _navigateToFormBuilder(context),
+          color: Colors.purple,
+        ),
         ActionButton(
           'تست سیستم',
           Icons.system_update,

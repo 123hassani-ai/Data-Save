@@ -8,6 +8,8 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFFF5F5F5);
   static const Color surfaceColor = Colors.white;
   static const Color errorColor = Color(0xFFB00020);
+  static const Color successColor = Color(0xFF4CAF50);
+  static const Color warningColor = Color(0xFFFF9800);
 
   // تعریف فونت فارسی Vazirmatn
   static const String fontFamily = 'Vazirmatn';

@@ -1,14 +1,60 @@
 # مرجع سریع Flutter - Flutter Quick Reference
 
-## 📊 Document Information
+## 📊 Document Information  
 - **Created:** 2025-09-01
-- **Last Updated:** 2025-09-01
-- **Version:** 1.0
+- **Last Updated:** 2025-09-01 (Form Builder Update)
+- **Version:** 5.2.0
 - **Maintainer:** DataSave Development Team
 - **Related Files:** `pubspec.yaml`, `/lib/`, Flutter documentation
 
 ## 🎯 Overview
-مرجع سریع کامل Flutter برای پروژه DataSave شامل command های مفید، widget های پرکاربرد، debugging techniques، و best practices برای توسعه سریع و موثر.
+مرجع سریع کامل Flutter برای پروژه DataSave شامل Form Builder components، command های مفید، widget های پرکاربرد، debugging techniques، و best practices.
+
+## ⚡ Form Builder Quick Commands
+
+### 🎯 Form Builder Navigation
+```dart
+// Navigate to Form Builder
+Navigator.pushNamed(context, AppRoutes.formBuilder, arguments: {
+  'formId': formId, // null for new form
+  'userId': userId,
+});
+
+// Form Builder with specific form
+Navigator.pushNamed(context, '/form-builder', arguments: {
+  'formId': 123,
+  'userId': 1,
+});
+```
+
+### 🧩 Key Components Usage
+```dart
+// Form Canvas - بوم طراحی
+FormCanvas() // Auto-handles drag & drop
+
+// Widget Library Panel  
+WidgetLibraryPanel() // Shows available widgets
+
+// Properties Panel
+FormPropertiesPanel() // Configure selected widget
+
+// Complete Form Builder Page
+FormBuilderPage(formId: null, userId: 1)
+```
+
+### 🔄 Provider Quick Access
+```dart
+// Form Builder Provider
+final formProvider = context.read<FormBuilderProvider>();
+formProvider.addWidgetToCanvas(widgetData);
+formProvider.selectWidget(widgetId);
+formProvider.saveForm();
+
+// Widget Library Provider  
+final widgetProvider = context.read<WidgetLibraryProvider>();
+await widgetProvider.loadWidgetLibrary();
+final widgets = widgetProvider.filteredWidgets;
+```
 
 ## 📋 Table of Contents
 - [Commands مفید](#commands-مفید)

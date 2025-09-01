@@ -2,21 +2,129 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-01-09
-- **Version:** 1.0
+- **Last Updated:** 2025-09-01
+- **Version:** 2.1
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/lib/presentation/widgets/`, `/lib/core/theme/`
+- **Related Files:** `/lib/presentation/widgets/`, `/lib/core/theme/`, [component-specifications.md](../06-UI-UX-Design/component-specifications.md)
 
 ## 🎯 Overview
-مستندات کامل کتابخانه کامپوننت‌های UI در DataSave با تمرکز بر Material Design 3 و Persian RTL support.
+مستندات کامل کتابخانه کامپوننت‌های UI در DataSave با تمرکز بر Material Design 3، Persian RTL support و بهبودهای جدید Form Builder.
 
 ## 📋 Table of Contents
 - [فلسفه Design System](#فلسفه-design-system)
+- [Form Builder Components (New)](#form-builder-components-new)
+- [Enhanced Widget Library](#enhanced-widget-library)
 - [Shared Components](#shared-components)
 - [Card Components](#card-components)
 - [Form Components](#form-components)
 - [Navigation Components](#navigation-components)
 - [Persian-Specific Components](#persian-specific-components)
+
+## 🆕 Form Builder Components (New)
+
+### FormBuilderPage - Enhanced UI
+**مسیر:** `lib/presentation/pages/form_builder_page.dart`
+
+**بهبودهای اصلی:**
+- ✅ AppBar با طراحی مدرن و gradient background
+- ✅ دکمه‌های حالت‌دار (Stateful Action Buttons)
+- ✅ انیمیشن‌های smooth transitions
+- ✅ بهبود تجربه کاربری RTL
+
+```dart
+// نمونه AppBar بهبود یافته
+PreferredSizeWidget _buildAppBar(BuildContext context) {
+  return AppBar(
+    backgroundColor: Colors.white,
+    elevation: 1,
+    shadowColor: Colors.grey.withOpacity(0.3),
+    title: Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.architecture, color: AppTheme.primaryColor),
+        ),
+        // ... title content
+      ],
+    ),
+  );
+}
+```
+
+### WidgetLibraryPanel - Complete Redesign  
+**مسیر:** `lib/presentation/widgets/form_builder/widget_library_panel.dart`
+
+**ویژگی‌های جدید:**
+- 🎨 Header با gradient زیبا
+- 🔍 Search bar با طراحی مدرن و RTL support
+- 📱 Category tabs با انیمیشن
+- 🎯 بهبود کلی UX
+
+```dart
+// Header با gradient
+Widget _buildHeader() {
+  return Container(
+    height: 70,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [
+          AppTheme.primaryColor,
+          AppTheme.primaryColor.withOpacity(0.8),
+        ],
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: AppTheme.primaryColor.withOpacity(0.3),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: // ... header content
+  );
+}
+```
+
+### Form Canvas - Interactive Improvements
+**مسیر:** `lib/presentation/widgets/form_builder/form_canvas.dart`
+
+**بهبودهای drag & drop:**
+- 🎭 انیمیشن hover states
+- 📱 بهتر visual feedback  
+- 🎨 Empty state زیباتر
+- ⚡ Performance بهتر
+
+```dart
+// Empty state با انیمیشن
+Widget _buildEmptyCanvas(BuildContext context) {
+  return DragTarget<FormWidgetModel>(
+    builder: (context, candidateData, rejectedData) {
+      final isHovering = candidateData.isNotEmpty;
+      
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          gradient: isHovering 
+              ? primaryHoverGradient
+              : neutralGradient,
+          borderRadius: BorderRadius.circular(12),
+          border: isHovering
+              ? Border.all(color: primary.withValues(alpha: 0.3))
+              : Border.all(color: outline.withValues(alpha: 0.2)),
+          boxShadow: isHovering ? hoverShadow : null,
+        ),
+        // ... content
+      );
+    },
+  );
+}
+```
 
 ## 🎨 فلسفه Design System - Design System Philosophy
 
