@@ -44,3 +44,27 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 api-openai.txt
+
+# DataSave Specific
+# Environment and Config Files
+.env
+.env.local
+.env.production
+config/secrets.php
+
+# Logs and Temporary Files
+*.log
+logs/
+tmp/
+temp/
+
+# Database Dumps and Backups
+
+*.dump
+backup/
+backups/
+
+# IDE and Editor Files
+.vscode/settings.json
+.vscode/launch.json
+*.code-workspace
