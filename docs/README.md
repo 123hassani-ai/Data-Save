@@ -44,12 +44,40 @@ docs/
 │   └── 📄 tables-reference.md       # مرجع جداول
 │
 ├── 📁 04-Flutter-Frontend/          # Frontend Flutter
-├── 📁 05-Services-Integration/      # ادغام سرویس‌ها
-├── 📁 06-UI-UX-Design/              # طراحی رابط کاربری
-├── 📁 07-Development-Workflow/      # فرآیند توسعه
+│   ├── 📄 flutter-architecture.md   # معماری Flutter
+│   ├── 📄 state-management.md       # مدیریت وضعیت
+│   ├── 📄 ui-components-library.md  # کتابخانه کامپوننت‌ها
+│   ├── 📄 routing-navigation.md     # مسیریابی
+│   ├── 📄 responsive-design.md      # طراحی واکنش‌گرا
+│   └── � persian-rtl-implementation.md # پیاده‌سازی RTL
+│
+├── �📁 05-Services-Integration/      # ادغام سرویس‌ها
+│   ├── 📄 openai-integration.md     # ✅ ادغام OpenAI (تکمیل شده)
+│   ├── 📄 api-service-layer.md      # لایه سرویس API
+│   ├── � logging-system.md         # سیستم لاگینگ
+│   ├── 📄 configuration-management.md # مدیریت تنظیمات
+│   └── 📄 external-services.md      # سرویس‌های خارجی
+│
+├── �📁 06-UI-UX-Design/              # طراحی رابط کاربری
+│   ├── 📄 design-system.md          # سیستم طراحی
+│   ├── 📄 material-design-3.md      # Material Design 3
+│   ├── 📄 component-specifications.md # ✅ مشخصات کامپوننت‌ها (تکمیل شده)
+│   ├── 📄 typography-fonts.md       # تایپوگرافی
+│   ├── 📄 color-scheme.md           # طرح رنگ
+│   └── � user-interface-guidelines.md # راهنمای UI
+│
+├── �📁 07-Development-Workflow/      # فرآیند توسعه
+│   ├── 📄 development-environment.md # محیط توسعه
+│   ├── 📄 build-deployment.md       # Build و Deployment
+│   ├── 📄 testing-strategy.md       # ✅ استراتژی تست (تکمیل شده)
+│   ├── 📄 version-control.md        # ✅ کنترل نسخه Git (تکمیل شده)
+│   └── 📄 code-standards.md         # استانداردهای کد
 │
 ├── 📁 99-Quick-Reference/           # مراجع سریع
-│   └── 📄 api-quick-reference.md    # مرجع سریع API
+│   ├── 📄 api-quick-reference.md    # مرجع سریع API
+│   ├── 📄 database-quick-reference.md # مرجع سریع Database
+│   ├── 📄 flutter-quick-reference.md # مرجع سریع Flutter
+│   └── 📄 troubleshooting-guide.md # ✅ راهنمای عیب‌یابی (تکمیل شده)
 │
 ├── 📁 Smart-Prompts/                # پرامپت‌های هوشمند
 │   ├── 📁 01-Starter-Create Flutter Project/
