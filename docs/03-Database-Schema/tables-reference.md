@@ -2,33 +2,34 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-01-09
-- **Version:** 1.0
+- **Last Updated:** 2025-09-01
+- **Version:** 5.1.0
 - **Maintainer:** DataSave Development Team
 - **Related Files:** `/database_setup.sql`, `/backend/config/database.php`
 
 ## 🎯 Overview
-مرجع کامل همه جداول دیتابیس DataSave با جزئیات کامل ساختار، داده‌های نمونه، و الگوهای استفاده.
+مرجع کامل همه جداول دیتابیس DataSave به همراه جداول جدید Form Builder Engine مرحله 5.1
 
 ## 📋 Table of Contents
-- [جداول فعلی](#جداول-فعلی)
+- [جداول اصلی سیستم](#جداول-اصلی-سیستم)
   - [system_settings](#جدول-system_settings)
   - [system_logs](#جدول-system_logs)
-- [جداول آینده](#جداول-آینده)
+- [جداول Form Builder](#جداول-form-builder)
   - [users](#جدول-users)
-  - [forms](#جدول-forms)
-  - [widgets](#جدول-widgets)
+  - [forms](#جدول-forms) 
+  - [form_widgets](#جدول-form_widgets)
   - [form_responses](#جدول-form_responses)
+- [Views و Triggers](#views-و-triggers)
 
-## 📁 جداول فعلی - Current Tables
+## 📁 جداول اصلی سیستم - Core System Tables
 
 ### جدول system_settings
 
 #### 📋 توضیحات کلی
-**Purpose:** ذخیره تنظیمات سیستم شامل تنظیمات OpenAI، تنظیمات برنامه، و پیکربندی‌های عمومی  
+**Purpose:** ذخیره تنظیمات سیستم شامل تنظیمات OpenAI، تنظیمات Form Builder، و پیکربندی‌های عمومی  
 **Engine:** InnoDB  
 **Charset:** utf8mb4_persian_ci  
-**Current Records:** 9 تنظیم فعال
+**Current Records:** 17 تنظیم فعال (9 اصلی + 8 Form Builder)
 
 #### 🏗️ ساختار جدول
 | Column | Type | Key | Null | Default | Description |
@@ -240,298 +241,214 @@ public function getLogs(array $filters = [], int $limit = 50, int $offset = 0): 
 ?>
 ```
 
-## 🔮 جداول آینده - Future Tables
+---
+
+## � جداول Form Builder - Form Builder Tables
 
 ### جدول users
 
 #### 📋 توضیحات کلی
-**Purpose:** مدیریت کاربران، احراز هویت، و نقش‌ها  
-**Status:** برنامه‌ریزی شده برای فاز 5  
+**Purpose:** مدیریت کاربران سیستم Form Builder با امکانات احراز هویت و نقش‌های مختلف  
 **Engine:** InnoDB  
-**Charset:** utf8mb4_persian_ci
+**Charset:** utf8mb4_persian_ci  
+**Current Records:** 2 کاربر (admin + test user)
 
-#### 🏗️ ساختار پیشنهادی
-```sql
-CREATE TABLE `users` (
-  `user_id` INT PRIMARY KEY AUTO_INCREMENT,
-  `username` VARCHAR(50) UNIQUE NOT NULL COMMENT 'نام کاربری یکتا',
-  `email` VARCHAR(255) UNIQUE NOT NULL COMMENT 'ایمیل یکتا', 
-  `password_hash` VARCHAR(255) NOT NULL COMMENT 'رمز عبور هش شده',
-  `first_name` VARCHAR(100) COMMENT 'نام',
-  `last_name` VARCHAR(100) COMMENT 'نام خانوادگی',
-  `phone` VARCHAR(20) COMMENT 'شماره تلفن',
-  `avatar_url` VARCHAR(500) COMMENT 'آدرس تصویر پروفایل',
-  `language` CHAR(2) DEFAULT 'fa' COMMENT 'زبان ترجیحی',
-  `timezone` VARCHAR(50) DEFAULT 'Asia/Tehran' COMMENT 'منطقه زمانی',
-  `role` ENUM('admin','manager','user','guest') DEFAULT 'user' COMMENT 'نقش کاربر',
-  `plan` ENUM('free','basic','premium','enterprise') DEFAULT 'free' COMMENT 'پلن اشتراک',
-  `email_verified` BOOLEAN DEFAULT FALSE COMMENT 'ایمیل تایید شده؟',
-  `is_active` BOOLEAN DEFAULT TRUE COMMENT 'کاربر فعال؟',
-  `last_login` TIMESTAMP NULL COMMENT 'آخرین ورود',
-  `login_count` INT DEFAULT 0 COMMENT 'تعداد ورود',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  INDEX idx_email (`email`),
-  INDEX idx_username (`username`),
-  INDEX idx_role (`role`),
-  INDEX idx_active (`is_active`),
-  INDEX idx_plan (`plan`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
-```
-
-#### 👤 نقش‌های کاربری
-| Role | Permissions | Description |
-|------|------------|-------------|
-| `admin` | Full access | دسترسی کامل به سیستم |
-| `manager` | Manage users & forms | مدیریت کاربران و فرم‌ها |
-| `user` | Create forms | ایجاد و مدیریت فرم‌های شخصی |
-| `guest` | View only | فقط مشاهده فرم‌های عمومی |
+#### 🏗️ ساختار جدول
+| Column | Type | Key | Null | Default | Description |
+|--------|------|-----|------|---------|-------------|
+| `id` | INT UNSIGNED | PK | NO | AUTO_INCREMENT | شناسه یکتا کاربر |
+| `email` | VARCHAR(191) | UNIQUE | NO | - | ایمیل کاربر (یکتا) |
+| `password_hash` | VARCHAR(255) | - | NO | - | رمز عبور هش شده با bcrypt |
+| `persian_name` | VARCHAR(100) | - | NO | - | نام فارسی کاربر |
+| `english_name` | VARCHAR(100) | - | YES | NULL | نام انگلیسی کاربر |
+| `role` | ENUM | - | NO | 'user' | نقش کاربر (admin, user, moderator) |
+| `status` | ENUM | - | NO | 'pending' | وضعیت کاربر (active, inactive, suspended, pending) |
+| `phone` | VARCHAR(15) | - | YES | NULL | شماره تلفن |
+| `preferences` | JSON | - | YES | NULL | تنظیمات شخصی کاربر |
+| `deleted_at` | TIMESTAMP | - | YES | NULL | زمان حذف نرم |
+| `created_at` | TIMESTAMP | - | NO | CURRENT_TIMESTAMP | زمان ایجاد |
 
 ### جدول forms
 
 #### 📋 توضیحات کلی
-**Purpose:** ذخیره فرم‌های ایجاد شده توسط کاربران  
-**Status:** فاز 3 (در حال توسعه)  
+**Purpose:** ذخیره فرم‌های ساخته شده توسط کاربران با ساختار JSON و تنظیمات کامل  
 **Engine:** InnoDB  
-**Relations:** belongs to User, has many Responses
+**Charset:** utf8mb4_persian_ci  
+**Current Records:** 1 فرم نمونه (تماس با ما)
 
-#### 🏗️ ساختار پیشنهادی
-```sql
-CREATE TABLE `forms` (
-  `form_id` INT PRIMARY KEY AUTO_INCREMENT,
-  `form_uuid` CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()) COMMENT 'شناسه عمومی فرم',
-  `user_id` INT NOT NULL COMMENT 'شناسه سازنده فرم',
-  `form_title` VARCHAR(255) NOT NULL COMMENT 'عنوان فرم',
-  `form_description` TEXT COMMENT 'توضیحات فرم',
-  `form_structure` JSON NOT NULL COMMENT 'ساختار کامل فرم (fields, validation, etc)',
-  `form_settings` JSON COMMENT 'تنظیمات فرم (theme, notifications, etc)',
-  `ai_prompt` TEXT COMMENT 'پرامپت اولیه AI که فرم از آن ساخته شد',
-  `form_status` ENUM('draft','published','paused','archived') DEFAULT 'draft',
-  `form_version` INT DEFAULT 1 COMMENT 'نسخه فرم (برای version control)',
-  `view_count` INT DEFAULT 0 COMMENT 'تعداد بازدید',
-  `submission_count` INT DEFAULT 0 COMMENT 'تعداد پاسخ',
-  `completion_rate` DECIMAL(5,2) DEFAULT 0.00 COMMENT 'درصد تکمیل فرم',
-  `is_public` BOOLEAN DEFAULT FALSE COMMENT 'فرم عمومی؟',
-  `password_protected` BOOLEAN DEFAULT FALSE COMMENT 'محافظت با رمز؟',
-  `password_hash` VARCHAR(255) COMMENT 'رمز فرم (در صورت محافظت)',
-  `max_submissions` INT COMMENT 'حداکثر تعداد پاسخ',
-  `expires_at` TIMESTAMP NULL COMMENT 'تاریخ انقضا',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-  INDEX idx_user_id (`user_id`),
-  INDEX idx_form_status (`form_status`),
-  INDEX idx_is_public (`is_public`),
-  INDEX idx_created_at (`created_at`),
-  FULLTEXT KEY ft_title_desc (`form_title`, `form_description`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
-```
+#### 🏗️ ساختار جدول
+| Column | Type | Key | Null | Default | Description |
+|--------|------|-----|------|---------|-------------|
+| `id` | INT UNSIGNED | PK | NO | AUTO_INCREMENT | شناسه یکتا فرم |
+| `user_id` | INT UNSIGNED | FK | NO | - | شناسه کاربر سازنده فرم |
+| `persian_title` | VARCHAR(255) | - | NO | - | عنوان فارسی فرم |
+| `persian_description` | TEXT | - | YES | NULL | توضیحات فارسی فرم |
+| `form_schema` | JSON | - | NO | - | ساختار JSON فرم و فیلدهای آن |
+| `form_config` | JSON | - | YES | NULL | تنظیمات عمومی فرم |
+| `status` | ENUM | - | NO | 'draft' | وضعیت فرم (active, draft, archived, published, paused) |
+| `is_public` | BOOLEAN | - | NO | FALSE | آیا فرم عمومی است؟ |
+| `total_responses` | INT UNSIGNED | - | NO | 0 | تعداد کل پاسخ‌ها |
+| `created_at` | TIMESTAMP | - | NO | CURRENT_TIMESTAMP | زمان ایجاد |
 
-#### 📊 Form Structure JSON Schema
-```json
-{
-  "form_structure": {
-    "fields": [
-      {
-        "id": "field_1",
-        "type": "text_input",
-        "label": "نام و نام خانوادگی",
-        "required": true,
-        "validation": {
-          "min_length": 2,
-          "max_length": 100,
-          "pattern": "persian_name"
-        },
-        "properties": {
-          "placeholder": "نام خود را وارد کنید",
-          "help_text": "نام کامل به فارسی"
-        }
-      }
-    ],
-    "layout": {
-      "theme": "modern",
-      "direction": "rtl", 
-      "columns": 1
-    },
-    "logic": {
-      "conditional_fields": [],
-      "calculations": []
-    }
-  }
-}
-```
-
-### جدول widgets
+### جدول form_widgets
 
 #### 📋 توضیحات کلی
-**Purpose:** کتابخانه ویجت‌های قابل استفاده در فرم‌ساز  
-**Status:** فاز 3 (در حال توسعه)  
-**Engine:** InnoDB
+**Purpose:** کتابخانه ویجت‌های فرم ساز شامل ویجت‌های پایه و پیشرفته  
+**Engine:** InnoDB  
+**Charset:** utf8mb4_persian_ci  
+**Current Records:** 10 ویجت پایه (text, select, radio, etc.)
 
-#### 🏗️ ساختار پیشنهادی
-```sql
-CREATE TABLE `widgets` (
-  `widget_id` INT PRIMARY KEY AUTO_INCREMENT,
-  `widget_type` VARCHAR(50) NOT NULL COMMENT 'نوع ویجت (text_input, date_picker, etc)',
-  `widget_name_fa` VARCHAR(100) NOT NULL COMMENT 'نام فارسی ویجت',
-  `widget_name_en` VARCHAR(100) NOT NULL COMMENT 'نام انگلیسی ویجت',
-  `widget_icon` VARCHAR(50) COMMENT 'نام آیکون Material',
-  `widget_category` VARCHAR(50) COMMENT 'دسته‌بندی (input, selection, display, etc)',
-  `default_properties` JSON COMMENT 'ویژگی‌های پیش‌فرض',
-  `validation_schema` JSON COMMENT 'قوانین اعتبارسنجی ممکن',
-  `render_template` TEXT COMMENT 'الگوی رندر کردن',
-  `help_text` TEXT COMMENT 'راهنمای استفاده',
-  `is_active` BOOLEAN DEFAULT TRUE COMMENT 'ویجت فعال؟',
-  `is_premium` BOOLEAN DEFAULT FALSE COMMENT 'ویجت پریمیوم؟',
-  `sort_order` INT DEFAULT 0 COMMENT 'ترتیب نمایش',
-  `version` VARCHAR(20) DEFAULT '1.0' COMMENT 'نسخه ویجت',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  UNIQUE KEY uk_widget_type (`widget_type`),
-  INDEX idx_category (`widget_category`),
-  INDEX idx_active (`is_active`),
-  INDEX idx_premium (`is_premium`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
-```
-
-#### 🧩 انواع ویجت‌های برنامه‌ریزی شده
-| Widget Type | Persian Name | Category | Premium |
-|-------------|--------------|----------|---------|
-| `text_input` | ورودی متن | input | ❌ |
-| `textarea` | متن چندخطی | input | ❌ |
-| `number_input` | ورودی عدد | input | ❌ |
-| `email_input` | ایمیل | input | ❌ |
-| `phone_input` | شماره تلفن | input | ❌ |
-| `date_picker` | انتخاب تاریخ | input | ❌ |
-| `time_picker` | انتخاب زمان | input | ❌ |
-| `dropdown` | لیست کشویی | selection | ❌ |
-| `radio_group` | گروه رادیویی | selection | ❌ |
-| `checkbox_group` | گروه چک‌باکس | selection | ❌ |
-| `file_upload` | آپلود فایل | input | ✅ |
-| `signature_pad` | امضا دیجیتال | input | ✅ |
-| `rating` | امتیازدهی | selection | ✅ |
-| `location_picker` | انتخاب موقعیت | input | ✅ |
+#### 🏗️ ساختار جدول
+| Column | Type | Key | Null | Default | Description |
+|--------|------|-----|------|---------|-------------|
+| `id` | INT UNSIGNED | PK | NO | AUTO_INCREMENT | شناسه یکتا ویجت |
+| `widget_type` | VARCHAR(50) | - | NO | - | نوع ویجت (text, select, checkbox, etc) |
+| `widget_code` | VARCHAR(100) | UNIQUE | NO | - | کد یکتا ویجت |
+| `persian_label` | VARCHAR(255) | - | NO | - | برچسب فارسی ویجت |
+| `widget_config` | JSON | - | NO | - | تنظیمات پیش‌فرض ویجت |
+| `validation_rules` | JSON | - | YES | NULL | قوانین اعتبارسنجی |
+| `icon_name` | VARCHAR(100) | - | YES | NULL | نام آیکون (Material Icons) |
+| `usage_count` | INT UNSIGNED | - | NO | 0 | تعداد استفاده در فرم‌ها |
+| `is_active` | BOOLEAN | - | NO | TRUE | آیا ویجت فعال است؟ |
 
 ### جدول form_responses
 
 #### 📋 توضیحات کلی
-**Purpose:** ذخیره پاسخ‌های ارسال شده به فرم‌ها  
-**Status:** فاز 4 (برنامه‌ریزی شده)  
+**Purpose:** ذخیره پاسخ‌های دریافتی از فرم‌ها همراه با متادیتا و آمار  
 **Engine:** InnoDB  
-**Partitioning:** ماهانه بر اساس تاریخ
+**Charset:** utf8mb4_persian_ci  
+**Current Records:** 0 پاسخ (آماده دریافت)
+
+#### 🏗️ ساختار جدول
+| Column | Type | Key | Null | Default | Description |
+|--------|------|-----|------|---------|-------------|
+| `id` | BIGINT UNSIGNED | PK | NO | AUTO_INCREMENT | شناسه یکتا پاسخ |
+| `form_id` | INT UNSIGNED | FK | NO | - | شناسه فرم مرتبط |
+| `respondent_user_id` | INT UNSIGNED | FK | YES | NULL | شناسه کاربر پاسخ‌دهنده |
+| `response_data` | JSON | - | NO | - | داده‌های پاسخ به صورت JSON |
+| `respondent_ip` | VARCHAR(45) | - | NO | - | آدرس IP پاسخ‌دهنده |
+| `submitted_at` | TIMESTAMP | - | NO | CURRENT_TIMESTAMP | زمان ثبت پاسخ |
+| `status` | ENUM | - | NO | 'submitted' | وضعیت پاسخ (submitted, reviewed, approved, rejected) |
+| `completion_time` | INT UNSIGNED | - | YES | NULL | زمان تکمیل به ثانیه |
+| `quality_score` | DECIMAL(3,2) | - | YES | NULL | امتیاز کیفیت پاسخ |
+
+---
+
+## 🔄 Views و Triggers
+
+### Views ایجاد شده
+- **`v_user_forms_stats`** - آمار فرم‌های هر کاربر
+- **`v_popular_widgets`** - ویجت‌های پرکاربرد  
+- **`v_recent_responses`** - پاسخ‌های اخیر فرم‌ها
+
+### Triggers فعال
+- **`trg_response_insert_stats`** - بروزرسانی آمار فرم هنگام دریافت پاسخ
+- **`trg_response_delete_stats`** - بروزرسانی آمار هنگام حذف پاسخ
+- **`trg_form_create_widget_stats`** - ثبت لاگ ایجاد فرم جدید
+
+---
+
+## 🔮 جداول آینده - Future Tables
+
+### جدول sessions (برنامه‌ریزی شده)
+
+#### 📋 توضیحات کلی
+**Purpose:** مدیریت جلسات کاربری و امنیت  
+**Status:** فاز بعدی (5.2)  
+**Engine:** InnoDB
 
 #### 🏗️ ساختار پیشنهادی
 ```sql
-CREATE TABLE `form_responses` (
-  `response_id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `form_id` INT NOT NULL COMMENT 'شناسه فرم',
-  `response_uuid` CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()) COMMENT 'شناسه عمومی پاسخ',
-  `respondent_ip` VARCHAR(45) COMMENT 'IP پاسخ‌دهنده',
-  `respondent_agent` TEXT COMMENT 'User Agent',
-  `response_data` JSON NOT NULL COMMENT 'داده‌های پاسخ کامل',
-  `submission_time` DECIMAL(8,3) COMMENT 'زمان تکمیل فرم (ثانیه)',
-  `is_complete` BOOLEAN DEFAULT TRUE COMMENT 'پاسخ کامل؟',
-  `validation_errors` JSON COMMENT 'خطاهای اعتبارسنجی',
-  `score` INT COMMENT 'امتیاز (برای quiz/assessment)',
-  `status` ENUM('submitted','reviewed','approved','rejected') DEFAULT 'submitted',
-  `reviewed_by` INT COMMENT 'بررسی شده توسط',
-  `reviewed_at` TIMESTAMP NULL COMMENT 'زمان بررسی',
-  `notes` TEXT COMMENT 'یادداشت‌های بررسی',
+CREATE TABLE `sessions` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `user_id` INT UNSIGNED NOT NULL,
+  `token_hash` VARCHAR(255) NOT NULL,
+  `ip_address` VARCHAR(45),
+  `user_agent` TEXT,
+  `expires_at` TIMESTAMP NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  FOREIGN KEY (form_id) REFERENCES forms(form_id) ON DELETE CASCADE,
-  FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL,
-  INDEX idx_form_id (`form_id`),
-  INDEX idx_status (`status`),
-  INDEX idx_created_at (`created_at`),
-  INDEX idx_is_complete (`is_complete`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
-PARTITION BY RANGE (TO_DAYS(created_at)) (
-    PARTITION p202501 VALUES LESS THAN (TO_DAYS('2025-02-01')),
-    PARTITION p202502 VALUES LESS THAN (TO_DAYS('2025-03-01')),
-    PARTITION p202503 VALUES LESS THAN (TO_DAYS('2025-04-01')),
-    PARTITION p_future VALUES LESS THAN MAXVALUE
-);
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uk_token (token_hash),
+  INDEX idx_user_expires (user_id, expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci;
 ```
 
-#### 📊 Response Data JSON Schema
-```json
-{
-  "response_data": {
-    "field_1": {
-      "value": "مجتبی حسنی",
-      "type": "text_input",
-      "validation_passed": true
-    },
-    "field_2": {
-      "value": "majid@example.com", 
-      "type": "email_input",
-      "validation_passed": true
-    },
-    "metadata": {
-      "start_time": "2025-01-09T10:00:00Z",
-      "end_time": "2025-01-09T10:05:30Z",
-      "page_views": 1,
-      "form_version": 1
-    }
-  }
-}
-```
-
-## 📊 خلاصه جداول - Tables Summary
+## � خلاصه جداول - Tables Summary
 
 ### آمار کلی
-| Table | Status | Records | Size | Partitioned |
-|-------|--------|---------|------|-------------|
-| `system_settings` | ✅ Active | 9 | ~2KB | ❌ |
-| `system_logs` | ✅ Active | 500+ | ~100KB | ✅ |
-| `users` | 📅 Planned | 0 | - | ❌ |
-| `forms` | 🔄 In Progress | 0 | - | ❌ |
-| `widgets` | 🔄 In Progress | 0 | - | ❌ |
-| `form_responses` | 📅 Future | 0 | - | ✅ |
+| Table | Status | Records | Engine | Charset |
+|-------|--------|---------|--------|---------|
+| `system_settings` | ✅ Active | 9 | InnoDB | utf8mb4_persian_ci |
+| `system_logs` | ✅ Active | 500+ | InnoDB | utf8mb4_persian_ci |
+| `users` | ✅ Active | 2 | InnoDB | utf8mb4_persian_ci |
+| `forms` | ✅ Active | 1 | InnoDB | utf8mb4_persian_ci |
+| `form_widgets` | ✅ Active | 10 | InnoDB | utf8mb4_persian_ci |
+| `form_responses` | ✅ Active | 0 | InnoDB | utf8mb4_persian_ci |
+| `sessions` | 📅 Planned | 0 | InnoDB | utf8mb4_persian_ci |
 
-### Storage Requirements (تخمینی)
+### Views ایجاد شده
+| View Name | Purpose | Base Tables |
+|-----------|---------|-------------|
+| `v_user_forms_stats` | آمار فرم‌های کاربر | users, forms |
+| `v_popular_widgets` | ویجت‌های پرکاربرد | form_widgets |
+| `v_recent_responses` | پاسخ‌های اخیر | form_responses, forms |
+
+### Storage Requirements (واقعی)
 ```yaml
-Current Database Size: ~500KB
-Projected 1 Year:
-  - users: ~1MB (1000 users)
-  - forms: ~10MB (5000 forms)  
-  - form_responses: ~100MB (50000 responses)
-  - system_logs: ~50MB (partitioned)
-  - Total: ~160MB
+Current Database Size: ~2MB
+Current Tables:
+  - system_settings: ~2KB (9 records)
+  - system_logs: ~100KB (500+ records)
+  - users: ~1KB (2 records)  
+  - forms: ~2KB (1 record)
+  - form_widgets: ~5KB (10 records)
+  - form_responses: ~0KB (0 records)
+  - Views: ~1KB (3 views)
 
-Projected 3 Years:
-  - users: ~5MB (10000 users)
-  - forms: ~100MB (50000 forms)
-  - form_responses: ~1GB (500000 responses)
-  - system_logs: ~200MB (partitioned)
-  - Total: ~1.3GB
+Growth Projections:
+  - Next 6 months: ~50MB
+  - Next 1 year: ~200MB
+  - Next 3 years: ~2GB
 ```
 
 ## ⚠️ Important Notes
 
 ### نکات مهم
-1. **Persian Support**: همه جداول با utf8mb4_persian_ci
-2. **JSON Fields**: برای ساختارهای پیچیده و قابل توسعه
-3. **Partitioning**: جداول حجیم بر اساس زمان
-4. **Foreign Keys**: CASCADE برای data integrity
-5. **Indexing**: بر اساس الگوهای query شایع
+1. **Persian Support**: همه جداول با utf8mb4_persian_ci charset پیاده‌سازی شدند
+2. **JSON Fields**: استفاده گسترده از JSON برای انعطاف‌پذیری داده‌ها
+3. **Foreign Keys**: Cascade constraints برای حفظ یکپارچگی داده‌ها
+4. **Indexing**: ایندکس‌های بهینه برای جستجوهای سریع
+5. **Views & Triggers**: برای محاسبات خودکار آمارها
+
+### وضعیت فعلی پایگاه داده
+✅ **کامل شده:**
+- 6 جدول اصلی ایجاد و آماده
+- 3 View آماری فعال
+- 3 Trigger برای بروزرسانی خودکار
+- داده‌های تست اولیه بارگذاری شده
 
 ### محدودیت‌های فعلی
-- جداول کاربری هنوز پیاده‌سازی نشده
-- سیستم backup خودکار ندارد
-- replication تنظیم نشده
-- monitoring tools نصب نیست
+- سیستم backup خودکار نیاز به تنظیم
+- Monitoring و alerting نصب نشده
+- Replication برای high availability نیاز است
+- Performance tuning در production مورد نیاز
+
+### تست‌های انجام شده
+✅ همه migrations با موفقیت اجرا شدند  
+✅ Foreign keys بدون خطا ایجاد شدند  
+✅ Views و Triggers فعال هستند  
+✅ داده‌های نمونه successfully inserted  
+✅ UTF8 Persian charset تایید شد
 
 ## 🔄 Related Documentation
-- [Database Design](./database-design.md)
-- [Relationships Diagram](./relationships-diagram.md)
-- [Performance & Indexes](./indexes-performance.md)
-- [Migration Scripts](./migration-scripts.md)
+- [Database Design](./database-design.md) - طراحی کلی دیتابیس
+- [Relationships Diagram](./relationships-diagram.md) - نمودار روابط جداول  
+- [Performance & Indexes](./indexes-performance.md) - بهینه‌سازی عملکرد
+- [Migration Scripts](./migration-scripts.md) - اسکریپت‌های مهاجرت
 
 ---
 *Last updated: 2025-01-09*  
-*File: /docs/03-Database-Schema/tables-reference.md*
+*Document version: 2.1 (Phase 5.1 Database Evolution Completed)*  
+*File: /docs/03-Database-Schema/tables-reference.md*  
+*Maintainer: DataSave Development Team*

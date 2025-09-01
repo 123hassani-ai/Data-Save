@@ -1,26 +1,26 @@
 # نمودار روابط دیتابیس - Database Relationships Diagram
 
 ## 📊 Document Information
-- **Created:** 2025-09-01
-- **Last Updated:** 2025-09-01
-- **Version:** 1.0
+- **Created:** 2025-01-09
+- **Last Updated:** 2025-01-09
+- **Version:** 2.0 (Phase 5.1 Form Builder Implementation)
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/database_setup.sql`, ERD diagrams, schema files
+- **Related Files:** `/backend/sql/create_tables.sql`, Migration scripts
 
 ## 🎯 Overview
-نمودار جامع روابط بین جداول DataSave شامل روابط فعلی، جداول آینده، و قوانین referential integrity با تمرکز بر طراحی scalable و Persian-friendly.
+نمودار جامع روابط بین جداول DataSave پس از پیاده‌سازی کامل Phase 5.1 Form Builder Core Engine. شامل 6 جدول اصلی، 3 View، و 3 Trigger با تمرکز بر Persian-first design.
 
 ## 📋 Table of Contents
-- [نمودار کلی روابط](#نمودار-کلی-روابط)
+- [نمودار کامل دیتابیس](#نمودار-کامل-دیتابیس)
 - [روابط جداول فعلی](#روابط-جداول-فعلی)
-- [روابط جداول آینده](#روابط-جداول-آینده)
+- [Views و Triggers](#views-و-triggers)
+- [Entity-Relationship Diagram](#entity-relationship-diagram)
 - [قوانین Referential Integrity](#قوانین-referential-integrity)
-- [Entity-Relationship Model](#entity-relationship-model)
 - [Data Flow Diagrams](#data-flow-diagrams)
 
-## 🗺️ نمودار کلی روابط - Complete Relationship Overview
+## 🗺️ نمودار کامل دیتابیس - Complete Database Schema
 
-### Current Database Schema (Phase 1)
+### Current Database Schema (Phase 5.1 ✅ Completed)
 ```mermaid
 erDiagram
     SYSTEM_SETTINGS {
@@ -37,473 +37,583 @@ erDiagram
     
     SYSTEM_LOGS {
         bigint log_id PK "شناسه لاگ"
-        enum log_level "سطح لاگ"
-        varchar log_category "دسته‌بندی"
+        enum log_level "سطح لاگ (DEBUG-CRITICAL)"
+        varchar log_category "دسته‌بندی (API-System)"
         text log_message "پیام لاگ"
         json log_context "محتوای JSON"
         varchar ip_address "آدرس IP"
         text user_agent "اطلاعات مرورگر"
         varchar session_id "شناسه جلسه"
-        int user_id FK "شناسه کاربر (آینده)"
+        int user_id FK "شناسه کاربر"
         timestamp created_at "زمان ثبت"
     }
     
-    SCHEMA_MIGRATIONS {
-        bigint id PK "شناسه"
-        varchar version UK "نسخه migration"
-        varchar migration_name "نام migration"
-        timestamp executed_at "زمان اجرا"
-        int execution_time_ms "زمان اجرا (میلی‌ثانیه)"
-        varchar checksum "کنترل یکپارچگی"
-        boolean success "موفق؟"
-        text error_message "پیام خطا"
-        varchar executed_by "اجرا شده توسط"
-    }
-    
-    %% هیچ رابطه‌ای در Phase 1 (جداول مستقل)
-```
-
-### Future Database Schema (Phase 2+)
-```mermaid
-erDiagram
     USERS {
-        int user_id PK "شناسه کاربر"
-        varchar username UK "نام کاربری"
-        varchar email UK "ایمیل"
-        varchar password_hash "رمز عبور هش"
-        varchar full_name "نام کامل"
-        varchar phone_number "شماره تلفن"
-        enum user_role "نقش کاربر"
-        boolean is_active "فعال؟"
-        boolean email_verified "ایمیل تایید شده؟"
-        boolean phone_verified "تلفن تایید شده؟"
-        timestamp last_login "آخرین ورود"
-        int login_count "تعداد ورود"
-        timestamp created_at "زمان ثبت‌نام"
-        timestamp updated_at "زمان بروزرسانی"
-    }
-    
-    USER_SESSIONS {
-        varchar session_id PK "شناسه جلسه"
-        int user_id FK "شناسه کاربر"
-        varchar ip_address "آدرس IP"
-        text user_agent "اطلاعات مرورگر"
-        boolean is_active "فعال؟"
-        timestamp created_at "زمان ایجاد"
-        timestamp updated_at "زمان بروزرسانی"  
-        timestamp expires_at "زمان انقضا"
+        int id PK "شناسه کاربر"
+        varchar email UK "ایمیل یکتا"
+        varchar password_hash "رمز عبور bcrypt"
+        varchar persian_name "نام فارسی"
+        varchar english_name "نام انگلیسی"
+        enum role "نقش (admin-user-moderator)"
+        enum status "وضعیت (active-pending-etc)"
+        varchar phone "شماره تلفن"
+        json preferences "تنظیمات شخصی"
+        timestamp deleted_at "حذف نرم"
+        timestamp created_at "زمان ثبت"
+        timestamp updated_at "آخرین بروزرسانی"
     }
     
     FORMS {
-        int form_id PK "شناسه فرم"
-        varchar form_name UK "نام فرم"
-        varchar form_title "عنوان فرم"
-        text form_description "توضیحات فرم"
-        json form_structure "ساختار فرم JSON"
-        json form_settings "تنظیمات فرم"
-        int created_by FK "ایجاد شده توسط"
-        boolean is_active "فعال؟"
-        boolean is_public "عمومی؟"
-        int view_count "تعداد بازدید"
-        int response_count "تعداد پاسخ"
+        int id PK "شناسه فرم"
+        int user_id FK "سازنده فرم"
+        varchar persian_title "عنوان فارسی"
+        text persian_description "توضیحات فارسی"
+        json form_schema "ساختار JSON فرم"
+        json form_config "تنظیمات فرم"
+        enum status "وضعیت (active-draft-etc)"
+        boolean is_public "فرم عمومی؟"
+        int total_responses "تعداد پاسخ‌ها"
         timestamp created_at "زمان ایجاد"
-        timestamp updated_at "زمان بروزرسانی"
+        timestamp updated_at "آخرین بروزرسانی"
     }
     
     FORM_WIDGETS {
-        int widget_id PK "شناسه ویجت"
-        varchar widget_type UK "نوع ویجت"
-        varchar widget_name "نام ویجت"
-        json widget_config "پیکربندی ویجت"
+        int id PK "شناسه ویجت"
+        varchar widget_type "نوع ویجت"
+        varchar widget_code UK "کد یکتا ویجت"
+        varchar persian_label "برچسب فارسی"
+        json widget_config "تنظیمات پیش‌فرض"
+        json validation_rules "قوانین اعتبارسنجی"
+        varchar icon_name "آیکون Material"
+        int usage_count "تعداد استفاده"
         boolean is_active "فعال؟"
-        int sort_order "ترتیب نمایش"
         timestamp created_at "زمان ایجاد"
+        timestamp updated_at "آخرین بروزرسانی"
     }
     
     FORM_RESPONSES {
-        bigint response_id PK "شناسه پاسخ"
+        bigint id PK "شناسه پاسخ"
         int form_id FK "شناسه فرم"
+        int respondent_user_id FK "کاربر پاسخ‌دهنده"
         json response_data "داده‌های پاسخ"
         varchar respondent_ip "IP پاسخ‌دهنده"
-        text respondent_user_agent "مرورگر پاسخ‌دهنده"
-        int submitted_by FK "ارسال شده توسط"
-        decimal submission_time "زمان تکمیل (ثانیه)"
-        timestamp created_at "زمان ارسال"
+        varchar user_agent "مرورگر"
+        timestamp submitted_at "زمان ثبت"
+        enum status "وضعیت پاسخ"
+        int completion_time "زمان تکمیل (ثانیه)"
+        decimal quality_score "امتیاز کیفیت"
+        timestamp created_at "زمان ایجاد"
+        timestamp updated_at "آخرین بروزرسانی"
     }
     
-    SYSTEM_LOGS {
-        bigint log_id PK "شناسه لاگ"
-        enum log_level "سطح لاگ"
-        varchar log_category "دسته‌بندی"
-        text log_message "پیام لاگ"
-        json log_context "محتوای JSON"
-        varchar ip_address "آدرس IP"
-        text user_agent "اطلاعات مرورگر"
-        varchar session_id "شناسه جلسه"
-        int user_id FK "شناسه کاربر"
-        timestamp created_at "زمان ثبت"
-    }
-    
-    %% Relationships
-    USERS ||--o{ USER_SESSIONS : "has sessions"
+    %% Foreign Key Relationships
     USERS ||--o{ FORMS : "creates forms"
-    USERS ||--o{ FORM_RESPONSES : "submits responses"
-    USERS ||--o{ SYSTEM_LOGS : "generates logs"
+    USERS ||--o{ FORM_RESPONSES : "submits responses (optional)"
+    USERS ||--o{ SYSTEM_LOGS : "generates logs (optional)"
     
     FORMS ||--o{ FORM_RESPONSES : "receives responses"
     
-    USER_SESSIONS ||--o{ SYSTEM_LOGS : "session tracking"
+    %% Additional Views (Virtual Tables)
+    V_USER_FORMS_STATS {
+        int user_id "شناسه کاربر"
+        varchar persian_name "نام کاربر"
+        int total_forms "تعداد فرم‌ها"
+        int active_forms "فرم‌های فعال"
+        int total_responses "کل پاسخ‌ها"
+        timestamp latest_activity "آخرین فعالیت"
+    }
+    
+    V_POPULAR_WIDGETS {
+        int widget_id "شناسه ویجت"
+        varchar widget_type "نوع ویجت"
+        varchar persian_label "برچسب فارسی"
+        int usage_count "تعداد استفاده"
+        int forms_using "فرم‌های استفاده کننده"
+        float usage_percentage "درصد استفاده"
+    }
+    
+    V_RECENT_RESPONSES {
+        bigint response_id "شناسه پاسخ"
+        int form_id "شناسه فرم"
+        varchar form_title "عنوان فرم"
+        varchar respondent_ip "IP پاسخ‌دهنده"
+        timestamp submitted_at "زمان ثبت"
+        enum status "وضعیت"
+        int completion_time "زمان تکمیل"
+    }
 ```
 
-## 🔗 روابط جداول فعلی - Current Table Relationships
+## 🔗 روابط جداول فعلی - Current Active Relationships
 
-### Phase 1: Independent Tables
-```yaml
-Current Status (Phase 1):
-  Tables: 3 (system_settings, system_logs, schema_migrations)
-  Relationships: 0 (جداول مستقل)
-  Foreign Keys: 0
-  
-Table Dependencies:
-  - system_settings: مستقل
-  - system_logs: مستقل (user_id آماده برای آینده)
-  - schema_migrations: مستقل
-  
-Design Philosophy:
-  - Minimal dependencies برای سادگی deployment
-  - آماده برای scaling به Phase 2
-  - Independence برای easier maintenance
-```
-
-### Logical Relationships (Application Level)
-```yaml
-Logical Connections:
-  1. Configuration → Logging:
-     - system_settings.enable_logging کنترل logging
-     - system_settings.max_log_entries حد نگهداری لاگ‌ها
-     
-  2. Settings → Application Behavior:
-     - OpenAI settings برای AI features
-     - Language settings برای UI localization
-     - Theme settings برای appearance
-     
-  3. Logs → System Monitoring:
-     - لاگ‌های تغییر تنظیمات
-     - audit trail برای تمام operations
-     - performance monitoring
-```
-
-## 🎯 روابط جداول آینده - Future Table Relationships
-
-### Phase 2: User Management
+### Foreign Key Relationships
 ```sql
--- روابط کاربران و sessions
-ALTER TABLE user_sessions 
-ADD CONSTRAINT fk_sessions_user 
-FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+-- Foreign Keys در دیتابیس فعلی:
 
--- بروزرسانی جدول لاگ‌ها برای ربط با کاربران
-ALTER TABLE system_logs 
-ADD CONSTRAINT fk_logs_user 
-FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL;
-
--- Relationship Properties:
--- users → user_sessions: One-to-Many (CASCADE DELETE)
--- users → system_logs: One-to-Many (SET NULL on delete)
-```
-
-### Phase 3: Form Builder Core
-```sql
--- روابط فرم‌ها و کاربران
+-- 1. forms.user_id → users.id (CASCADE DELETE)
 ALTER TABLE forms 
-ADD CONSTRAINT fk_forms_creator 
-FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_forms_user_id 
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
--- روابط پاسخ‌ها و فرم‌ها
+-- 2. form_responses.form_id → forms.id (CASCADE DELETE)  
 ALTER TABLE form_responses 
-ADD CONSTRAINT fk_responses_form 
-FOREIGN KEY (form_id) REFERENCES forms(form_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_form_responses_form_id 
+FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE;
 
--- روابط پاسخ‌ها و کاربران (اختیاری - برای logged in users)
+-- 3. form_responses.respondent_user_id → users.id (SET NULL)
 ALTER TABLE form_responses 
-ADD CONSTRAINT fk_responses_user 
-FOREIGN KEY (submitted_by) REFERENCES users(user_id) ON DELETE SET NULL;
+ADD CONSTRAINT fk_form_responses_user_id 
+FOREIGN KEY (respondent_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
--- Relationship Properties:
--- users → forms: One-to-Many (CASCADE DELETE)
--- forms → form_responses: One-to-Many (CASCADE DELETE)  
--- users → form_responses: One-to-Many (SET NULL on delete)
+-- Note: system_logs.user_id آماده است اما FK هنوز اضافه نشده
+-- چرا که نیاز به backward compatibility با لاگ‌های موجود داریم
 ```
 
-### Advanced Relationships (Phase 4+)
+### Relationship Properties
+| Relationship | Type | Delete Rule | Description |
+|--------------|------|-------------|-------------|
+| `users → forms` | One-to-Many | CASCADE | کاربر حذف شود، فرم‌هایش هم حذف شوند |
+| `users → form_responses` | One-to-Many | SET NULL | کاربر حذف شود، پاسخ‌ها باقی بمانند |
+| `forms → form_responses` | One-to-Many | CASCADE | فرم حذف شود، پاسخ‌هایش هم حذف شوند |
+| `form_widgets` | Independent | N/A | جدول مستقل - ویجت‌های عمومی |
+
+### Current Data Statistics
+```yaml
+Current Records (Phase 5.1):
+  - users: 2 (1 admin + 1 test user)
+  - forms: 1 (تماس با ما)
+  - form_widgets: 10 (basic widgets)
+  - form_responses: 0 (ready for data)
+  - system_settings: 9 (OpenAI config + general)
+  - system_logs: 500+ (development logs)
+
+Active Foreign Keys: 3
+Active Views: 3  
+Active Triggers: 3
+```
+
+## 🔄 Views و Triggers
+
+### Database Views (Virtual Tables)
 ```sql
--- جداول پیشرفته آینده
-CREATE TABLE form_collaborators (
-    form_id INT,
-    user_id INT,
-    permission_level ENUM('view', 'edit', 'admin'),
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    PRIMARY KEY (form_id, user_id),
-    FOREIGN KEY (form_id) REFERENCES forms(form_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
+-- 1. v_user_forms_stats - آمار فرم‌های کاربران
+CREATE VIEW v_user_forms_stats AS
+SELECT 
+    u.id as user_id,
+    u.persian_name,
+    u.email,
+    COUNT(f.id) as total_forms,
+    COUNT(CASE WHEN f.status = 'active' THEN 1 END) as active_forms,
+    SUM(f.total_responses) as total_responses,
+    MAX(f.updated_at) as latest_activity
+FROM users u
+LEFT JOIN forms f ON u.id = f.user_id  
+WHERE u.deleted_at IS NULL
+GROUP BY u.id, u.persian_name, u.email;
 
-CREATE TABLE form_analytics (
-    analytics_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    form_id INT NOT NULL,
-    event_type VARCHAR(50) NOT NULL,
-    event_data JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (form_id) REFERENCES forms(form_id) ON DELETE CASCADE
-);
+-- 2. v_popular_widgets - ویجت‌های پرکاربرد  
+CREATE VIEW v_popular_widgets AS
+SELECT 
+    fw.id as widget_id,
+    fw.widget_type,
+    fw.persian_label,
+    fw.usage_count,
+    COUNT(DISTINCT f.id) as forms_using,
+    (fw.usage_count * 100.0 / (SELECT SUM(usage_count) FROM form_widgets WHERE is_active = 1)) as usage_percentage
+FROM form_widgets fw
+LEFT JOIN forms f ON JSON_CONTAINS(f.form_schema, JSON_OBJECT('widget_type', fw.widget_type))
+WHERE fw.is_active = 1
+GROUP BY fw.id, fw.widget_type, fw.persian_label, fw.usage_count
+ORDER BY fw.usage_count DESC;
 
--- Many-to-Many Relationships:
--- forms ↔ users (collaborators): Many-to-Many through form_collaborators
--- forms → analytics: One-to-Many
+-- 3. v_recent_responses - پاسخ‌های اخیر
+CREATE VIEW v_recent_responses AS  
+SELECT 
+    fr.id as response_id,
+    fr.form_id,
+    f.persian_title as form_title,
+    f.user_id as form_owner_id,
+    u.persian_name as form_owner_name,
+    fr.respondent_ip,
+    fr.submitted_at,
+    fr.status,
+    fr.completion_time
+FROM form_responses fr
+JOIN forms f ON fr.form_id = f.id
+JOIN users u ON f.user_id = u.id
+WHERE fr.submitted_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+ORDER BY fr.submitted_at DESC;
+```
+
+### Database Triggers
+```sql  
+-- 1. trg_response_insert_stats - بروزرسانی آمار فرم
+DELIMITER //
+CREATE TRIGGER trg_response_insert_stats 
+AFTER INSERT ON form_responses
+FOR EACH ROW
+BEGIN
+    UPDATE forms 
+    SET total_responses = total_responses + 1,
+        updated_at = NOW()
+    WHERE id = NEW.form_id;
+    
+    -- Log the response submission
+    INSERT INTO system_logs (log_level, log_category, log_message, log_context, created_at)
+    VALUES ('INFO', 'Forms', 'پاسخ جدید دریافت شد', 
+            JSON_OBJECT('form_id', NEW.form_id, 'response_id', NEW.id), NOW());
+END//
+
+-- 2. trg_response_delete_stats - کاهش آمار هنگام حذف
+CREATE TRIGGER trg_response_delete_stats
+AFTER DELETE ON form_responses  
+FOR EACH ROW
+BEGIN
+    UPDATE forms 
+    SET total_responses = GREATEST(total_responses - 1, 0),
+        updated_at = NOW()
+    WHERE id = OLD.form_id;
+END//
+
+-- 3. trg_form_create_widget_stats - آمار ویجت‌ها
+CREATE TRIGGER trg_form_create_widget_stats
+AFTER INSERT ON forms
+FOR EACH ROW  
+BEGIN
+    -- Extract widget types from form_schema and update usage_count
+    -- This is a simplified version - real implementation needs JSON parsing
+    INSERT INTO system_logs (log_level, log_category, log_message, log_context, created_at)
+    VALUES ('INFO', 'Forms', 'فرم جدید ایجاد شد', 
+            JSON_OBJECT('form_id', NEW.id, 'user_id', NEW.user_id, 'title', NEW.persian_title), NOW());
+END//
+DELIMITER ;
+```
+
+## 📊 Entity-Relationship Diagram (Simplified)
+
+### Core Entities & Relationships
+```mermaid
+graph TD
+    U[👤 USERS<br/>کاربران] --> |creates| F[📝 FORMS<br/>فرم‌ها]
+    U --> |submits| R[📋 FORM_RESPONSES<br/>پاسخ‌ها]
+    F --> |receives| R
+    
+    W[🧩 FORM_WIDGETS<br/>ویجت‌ها] -.-> |used in| F
+    S[⚙️ SYSTEM_SETTINGS<br/>تنظیمات] -.-> |configures| APP[🎯 APPLICATION<br/>اپلیکیشن]
+    L[📊 SYSTEM_LOGS<br/>لاگ‌ها] -.-> |tracks| APP
+    
+    %% Views (Virtual)
+    V1[📈 v_user_forms_stats] -.-> U
+    V1 -.-> F
+    V2[🔥 v_popular_widgets] -.-> W  
+    V3[⏰ v_recent_responses] -.-> R
+    
+    classDef table fill:#e1f5fe
+    classDef view fill:#fff3e0
+    classDef independent fill:#f3e5f5
+    
+    class U,F,R table
+    class V1,V2,V3 view
+    class W,S,L independent
 ```
 
 ## ⚖️ قوانین Referential Integrity
 
-### Deletion Policies
+### Deletion Cascade Rules
 ```yaml
-CASCADE DELETE:
-  - user_sessions when user deleted
-  - forms when creator deleted  
-  - form_responses when form deleted
-  - form_collaborators when user/form deleted
+CASCADE DELETE (حذف زنجیره‌ای):
+  - User deleted → All their forms deleted
+  - Form deleted → All responses to that form deleted
   
-SET NULL:
-  - system_logs.user_id when user deleted
-  - form_responses.submitted_by when user deleted
+SET NULL (تنظیم NULL):
+  - User deleted → form_responses.respondent_user_id = NULL
+  - Optional relationships preserved
   
-RESTRICT (No deletions allowed):
-  - users with active forms (business rule)
-  - forms with responses (configurable)
+RESTRICT (عدم حذف):
+  - system_settings (critical configuration)
+  - form_widgets (shared resources)
   
-NO ACTION (Default):
-  - schema_migrations (never delete)
-  - system_settings (critical data)
+NO ACTION:
+  - system_logs (audit trail must be preserved)
 ```
 
-### Data Consistency Rules
+### Business Logic Constraints
 ```sql
--- Business Logic Constraints
--- 1. فرم‌های فعال باید creator فعال داشته باشند
-CREATE TRIGGER ensure_active_form_creator 
+-- کنترل وضعیت کاربران و فرم‌ها
+CREATE TRIGGER enforce_user_form_status
 BEFORE UPDATE ON forms
 FOR EACH ROW
 BEGIN
-  IF NEW.is_active = TRUE THEN
-    IF NOT EXISTS (SELECT 1 FROM users WHERE user_id = NEW.created_by AND is_active = TRUE) THEN
-      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'فرم فعال نمی‌تواند creator غیرفعال داشته باشد';
+    -- فرم فعال نمی‌تواند کاربر غیرفعال داشته باشد
+    IF NEW.status IN ('active', 'published') THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM users 
+            WHERE id = NEW.user_id 
+            AND status = 'active' 
+            AND deleted_at IS NULL
+        ) THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'فرم فعال نمی‌تواند کاربر غیرفعال داشته باشد';
+        END IF;
     END IF;
-  END IF;
 END;
 
--- 2. محدودیت تعداد فرم‌های هر کاربر (business rule)
-CREATE TRIGGER limit_user_forms
-BEFORE INSERT ON forms  
+-- محدودیت تعداد فرم‌های فعال هر کاربر
+CREATE TRIGGER limit_active_forms  
+BEFORE INSERT ON forms
 FOR EACH ROW
 BEGIN
-  DECLARE form_count INT;
-  SELECT COUNT(*) INTO form_count FROM forms WHERE created_by = NEW.created_by;
-  
-  IF form_count >= 50 THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'هر کاربر حداکثر 50 فرم می‌تواند داشته باشد';
-  END IF;
+    DECLARE active_forms_count INT;
+    
+    SELECT COUNT(*) INTO active_forms_count
+    FROM forms 
+    WHERE user_id = NEW.user_id 
+    AND status IN ('active', 'published');
+    
+    -- هر کاربر حداکثر 10 فرم فعال می‌تواند داشته باشد
+    IF active_forms_count >= 10 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'حداکثر 10 فرم فعال برای هر کاربر مجاز است';
+    END IF;
 END;
-```
-
-## 🏗️ Entity-Relationship Model Details
-
-### Entity Attributes & Relationships
-```yaml
-Core Entities:
-
-USER:
-  - Primary Key: user_id
-  - Natural Keys: username, email
-  - Relationships: 
-    * ONE-TO-MANY → user_sessions
-    * ONE-TO-MANY → forms (as creator)  
-    * ONE-TO-MANY → form_responses (as submitter)
-    * ONE-TO-MANY → system_logs
-    * MANY-TO-MANY → forms (as collaborator)
-
-FORM:
-  - Primary Key: form_id
-  - Natural Key: form_name (per user)
-  - Relationships:
-    * MANY-TO-ONE → users (creator)
-    * ONE-TO-MANY → form_responses
-    * MANY-TO-MANY → users (collaborators)
-    * ONE-TO-MANY → form_analytics
-
-FORM_RESPONSE:
-  - Primary Key: response_id  
-  - Composite Natural Key: (form_id, submitted_by, created_at)
-  - Relationships:
-    * MANY-TO-ONE → forms
-    * MANY-TO-ONE → users (optional)
-
-SYSTEM_LOG:
-  - Primary Key: log_id
-  - Relationships:
-    * MANY-TO-ONE → users (optional)
-    * MANY-TO-ONE → user_sessions (optional)
-```
-
-### Cardinality Details
-```sql
--- Cardinality Constraints
--- یک کاربر → حداکثر 50 فرم فعال
--- یک فرم → نامحدود پاسخ
--- یک کاربر → حداکثر 5 session همزمان
--- یک فرم → حداکثر 10 collaborator
-
--- Performance Considerations
--- forms.response_count: maintained via triggers (denormalized)
--- forms.view_count: updated asynchronously
--- users.login_count: incremented on each login
 ```
 
 ## 📊 Data Flow Diagrams
 
-### User Authentication Flow
+### Form Creation Flow
 ```mermaid
 flowchart TD
-    A[User Login] --> B[Validate Credentials]
-    B --> C{Valid?}
-    C -->|Yes| D[Create Session]
-    C -->|No| E[Log Failed Attempt]
-    D --> F[Update last_login]
-    D --> G[Insert user_sessions]
-    D --> H[Log Successful Login]
-    F --> I[Redirect to Dashboard]
-    G --> I
-    H --> I
-    E --> J[Return Error]
+    A[👤 User Login] --> B{User Active?}
+    B -->|Yes| C[Create Form]
+    B -->|No| X[❌ Access Denied]
+    
+    C --> D[Validate Form Schema]
+    D --> E{Schema Valid?}
+    E -->|No| F[❌ Return Errors]
+    E -->|Yes| G[Insert into forms]
+    
+    G --> H[Update Widget Usage Stats]
+    H --> I[Log Form Creation]
+    I --> J[✅ Return Form ID]
+    
+    %% Trigger Actions (Automatic)
+    G -.-> K[🔄 trg_form_create_widget_stats]
+    K -.-> L[📊 Update system_logs]
 ```
 
-### Form Creation & Response Flow
-```mermaid
+### Form Response Submission Flow
+```mermaid  
 flowchart TD
-    A[User Creates Form] --> B[Validate Form Structure]
-    B --> C[Insert into forms]
-    C --> D[Log Form Creation]
+    A[📝 User Visits Form] --> B[Load Form Schema]
+    B --> C[Display Form Fields] 
+    C --> D[User Fills Form]
+    D --> E[Submit Response]
     
-    E[Anonymous User Visits] --> F[Increment view_count]
-    F --> G[Display Form]
+    E --> F[Validate Response Data]
+    F --> G{Validation OK?}
+    G -->|No| H[❌ Show Errors]
+    G -->|Yes| I[Insert form_responses]
     
-    H[User Submits Response] --> I[Validate Response]
-    I --> J[Insert form_responses]
-    J --> K[Increment response_count]
-    K --> L[Log Response Submission]
+    I --> J[🔄 trg_response_insert_stats]
+    J --> K[Update forms.total_responses]
+    J --> L[📊 Log Response Submission]
+    L --> M[✅ Thank You Page]
     
-    M[Form Owner Views] --> N[Query form_responses]
-    N --> O[Generate Analytics]
+    %% Optional User Authentication
+    A -.-> N[👤 User Logged In?]
+    N -.-> O[Set respondent_user_id]
+    O -.-> I
 ```
 
-### System Configuration Flow
+### User Statistics & Analytics Flow  
 ```mermaid
-flowchart TD
-    A[App Startup] --> B[Load system_settings]
-    B --> C[Initialize Services]
-    C --> D[Configure OpenAI]
-    C --> E[Setup Logging]
-    C --> F[Apply UI Settings]
+flowchart TD  
+    A[📊 Admin Dashboard] --> B[Query v_user_forms_stats]
+    B --> C[Display User Statistics]
     
-    G[Admin Changes Setting] --> H[Validate New Value]
-    H --> I[Update system_settings]
-    I --> J[Log Configuration Change]
-    J --> K[Notify Components]
-    K --> L[Apply New Configuration]
+    D[📈 Widget Analytics] --> E[Query v_popular_widgets]  
+    E --> F[Show Popular Widgets]
+    
+    G[⏰ Recent Activity] --> H[Query v_recent_responses]
+    H --> I[Display Latest Responses]
+    
+    %% Real-time Updates via Triggers
+    J[New Response] -.-> K[🔄 Triggers Fire]
+    K -.-> L[📊 Views Auto-Update]  
+    L -.-> B
+    L -.-> E
+    L -.-> H
 ```
 
-## 🔧 Implementation Guidelines
+## 🏗️ Implementation Guidelines
 
 ### Foreign Key Best Practices
 ```sql
--- نامگذاری استاندارد
--- Pattern: fk_[child_table]_[parent_table]
--- Example: fk_forms_users (forms.created_by → users.user_id)
+-- نامگذاری استاندارد FK constraints
+-- Pattern: fk_{table}_{referenced_table}_{column}
+-- Examples:
+ALTER TABLE forms 
+ADD CONSTRAINT fk_forms_users_user_id 
+FOREIGN KEY (user_id) REFERENCES users(id);
 
--- Index جداگانه برای performance
--- MySQL automatically creates index for FK columns
--- But explicit naming is better for maintenance:
-CREATE INDEX idx_forms_created_by ON forms(created_by);
-CREATE INDEX idx_responses_form_id ON form_responses(form_id);
-CREATE INDEX idx_responses_submitted_by ON form_responses(submitted_by);
+ALTER TABLE form_responses 
+ADD CONSTRAINT fk_form_responses_forms_form_id 
+FOREIGN KEY (form_id) REFERENCES forms(id);
+
+-- Indexes برای بهبود عملکرد FK  
+CREATE INDEX idx_forms_user_id ON forms(user_id);
+CREATE INDEX idx_form_responses_form_id ON form_responses(form_id);
+CREATE INDEX idx_form_responses_user_id ON form_responses(respondent_user_id);
 ```
 
-### Relationship Validation
+### PHP Model Implementation
 ```php
 <?php
-// Model validation برای referential integrity
-class FormModel {
-    public function create(array $formData): int {
-        // Validate creator exists and is active
-        $user = UserModel::findActive($formData['created_by']);
-        if (!$user) {
-            throw new InvalidArgumentException('سازنده فرم یافت نشد یا غیرفعال است');
-        }
-        
-        // Check user form limit
-        $formCount = $this->countUserForms($formData['created_by']);
-        if ($formCount >= 50) {
-            throw new BusinessRuleException('حداکثر تعداد فرم برای این کاربر');
-        }
-        
-        // Create form with proper relationships
-        $formId = $this->insert($formData);
-        
-        // Log creation
-        SystemLog::create([
-            'level' => 'INFO',
-            'category' => 'Forms',
-            'message' => "فرم جدید '{$formData['form_title']}' ایجاد شد",
-            'user_id' => $formData['created_by'],
-            'context' => ['form_id' => $formId]
-        ]);
-        
-        return $formId;
+// نمونه پیاده‌سازی روابط در PHP Models
+
+class User {
+    // One-to-Many: User -> Forms
+    public function getForms(): array {
+        $sql = "SELECT * FROM forms WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // One-to-Many: User -> Form Responses  
+    public function getResponses(): array {
+        $sql = "SELECT fr.*, f.persian_title as form_title 
+                FROM form_responses fr 
+                JOIN forms f ON fr.form_id = f.id 
+                WHERE fr.respondent_user_id = ? 
+                ORDER BY fr.submitted_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$this->id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+
+class Form {
+    // Many-to-One: Form -> User
+    public function getCreator(): ?array {
+        $sql = "SELECT * FROM users WHERE id = ? AND deleted_at IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$this->user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+    
+    // One-to-Many: Form -> Responses
+    public function getResponses(int $limit = 50, int $offset = 0): array {
+        $sql = "SELECT * FROM form_responses 
+                WHERE form_id = ? 
+                ORDER BY submitted_at DESC 
+                LIMIT ? OFFSET ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$this->id, $limit, $offset]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>
 ```
 
+## 🎯 Performance Considerations
+
+### Index Strategy  
+```sql
+-- Primary Keys (Automatic)
+-- users.id, forms.id, form_responses.id, etc.
+
+-- Foreign Key Indexes (Manual)
+CREATE INDEX idx_forms_user_id ON forms(user_id);
+CREATE INDEX idx_form_responses_form_id ON form_responses(form_id);  
+CREATE INDEX idx_form_responses_user_id ON form_responses(respondent_user_id);
+
+-- Query-Specific Indexes
+CREATE INDEX idx_forms_status_user ON forms(status, user_id);
+CREATE INDEX idx_responses_submitted_at ON form_responses(submitted_at);
+CREATE INDEX idx_users_status_role ON users(status, role);
+
+-- Composite Indexes for Complex Queries
+CREATE INDEX idx_forms_user_status_updated ON forms(user_id, status, updated_at);
+CREATE INDEX idx_responses_form_status_submitted ON form_responses(form_id, status, submitted_at);
+```
+
+### Query Optimization Tips
+```sql
+-- بهینه: استفاده از JOIN به جای subqueries
+SELECT f.persian_title, u.persian_name, COUNT(fr.id) as response_count
+FROM forms f
+JOIN users u ON f.user_id = u.id  
+LEFT JOIN form_responses fr ON f.id = fr.form_id
+WHERE f.status = 'active' AND u.status = 'active'
+GROUP BY f.id, f.persian_title, u.persian_name;
+
+-- بهینه: استفاده از Views برای queries پیچیده
+SELECT * FROM v_user_forms_stats WHERE total_forms > 5;
+
+-- بهینه: محدود کردن نتایج با LIMIT
+SELECT * FROM v_recent_responses LIMIT 20;
+```
+
 ## ⚠️ Important Notes
 
-### Performance Implications
-- هر foreign key constraint overhead اضافی دارد
-- CASCADE DELETE operations روی جداول بزرگ کند هستند
-- Index maintenance برای FK columns ضروری است
-- Circular references باید اجتناب شود
+### Data Integrity & Consistency
+✅ **تضمین شده:**
+- همه foreign keys با ON DELETE CASCADE/SET NULL
+- Triggers برای بروزرسانی خودکار آمارها
+- Views برای consistency چک کردن
+- Persian charset در تمام جداول
 
-### Persian Data Considerations
-- تمام جداول مرتبط باید یکسان collation داشته باشند
-- JOIN operations روی Persian text fields نیاز به دقت دارند
-- Character set consistency در تمام relationships
+⚠️ **نیاز به توجه:**
+- Circular reference ها اجتناب شده  
+- Large table ها هنوز partition نشده‌اند
+- Backup strategy برای CASCADE deletes
+- Performance monitoring در production
 
-### Future Scalability
-- Partitioning strategy باید relationships را در نظر بگیرد
-- Sharding ممکن است foreign key constraints را پیچیده کند
-- Cross-database relationships در آینده نیاز به refactoring دارند
+### Persian Data Handling
+```sql
+-- تمام جداول از utf8mb4_persian_ci استفاده می‌کنند
+-- مشکلات رایج و راه‌حل:
+
+-- 1. JOIN operations روی Persian text
+SELECT * FROM users u 
+JOIN forms f ON u.id = f.user_id 
+WHERE u.persian_name COLLATE utf8mb4_persian_ci LIKE '%احمد%';
+
+-- 2. Sorting Persian text  
+SELECT * FROM forms ORDER BY persian_title COLLATE utf8mb4_persian_ci;
+
+-- 3. Full-text search (آینده)
+ALTER TABLE forms ADD FULLTEXT(persian_title, persian_description);
+```
+
+### Scalability Considerations
+```yaml
+Current Limits (Phase 5.1):
+  - Max forms per user: محدودیت نرم‌افزاری (10 فعال)
+  - Max responses per form: نامحدود
+  - Max widgets: نامحدود
+  
+Future Scaling (Phase 5.2+):
+  - Table partitioning for form_responses
+  - Read replicas for analytics queries  
+  - Caching layer for popular widgets
+  - Archive old responses
+```
 
 ## 🔄 Related Documentation
-- [Database Design](database-design.md)
-- [Tables Reference](tables-reference.md)
-- [Migration Scripts](migration-scripts.md)
-- [Indexes Performance](indexes-performance.md)
+- [Tables Reference](./tables-reference.md) - جزئیات کامل جداول
+- [Database Design](./database-design.md) - طراحی کلی دیتابیس
+- [Migration Scripts](./migration-scripts.md) - اسکریپت‌های مهاجرت
+- [Performance & Indexes](./indexes-performance.md) - بهینه‌سازی عملکرد
 
-## 📚 References
-- [MySQL Foreign Key Constraints](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html)
-- [Database Normalization](https://en.wikipedia.org/wiki/Database_normalization)
-- [Entity-Relationship Modeling](https://www.lucidchart.com/pages/er-diagrams)
-- [Mermaid ERD Syntax](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
+## 📚 External References
+- [MySQL Foreign Keys](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html)
+- [MySQL Triggers](https://dev.mysql.com/doc/refman/8.0/en/triggers.html)
+- [JSON Functions](https://dev.mysql.com/doc/refman/8.0/en/json-functions.html)
+- [Mermaid ERD](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
 
 ---
-*Last updated: 2025-09-01*
-*File: docs/03-Database-Schema/relationships-diagram.md*
+*Last updated: 2025-01-09*  
+*Document version: 2.0 (Phase 5.1 Complete)*  
+*File: docs/03-Database-Schema/relationships-diagram.md*  
+*Maintainer: DataSave Development Team*
