@@ -1,0 +1,1 @@
+component-specifications.md        # مشخصات کامپوننت‌ها

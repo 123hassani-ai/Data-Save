@@ -1,0 +1,1 @@
+configuration-management.md        # مدیریت تنظیمات
