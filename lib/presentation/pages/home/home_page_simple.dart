@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/logger/logger_service.dart';
 import '../../../core/services/api_service.dart';
+import '../../../core/logger/logger_service.dart';
 
 /// صفحه اصلی برنامه DataSave با تست Backend PHP
 class HomePage extends StatefulWidget {
@@ -11,12 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // وضعیت‌های سیستم
   bool _serverConnected = false;
   String _connectionStatus = 'در حال بررسی...';
   List<Map<String, dynamic>> _systemSettings = [];
-  List<LogEntry> _recentLogs = [];
-  List<Map<String, dynamic>> _serverLogs = [];
   bool _isLoading = true;
   Map<String, dynamic>? _systemInfo;
 
@@ -26,30 +23,22 @@ class _HomePageState extends State<HomePage> {
     _testSystemComponents();
   }
 
-  /// تست اجزای مختلف سیستم
   Future<void> _testSystemComponents() async {
     setState(() {
       _isLoading = true;
       _connectionStatus = 'در حال تست اتصال به Backend...';
     });
 
+    print('🔍 شروع تست سیستم‌های Backend');
     LoggerService.info('HomePage', 'شروع تست سیستم‌های Backend');
 
     try {
-      // تست اتصال Backend
       await _testBackendConnection();
-
-      // بارگذاری تنظیمات
       await _loadSystemSettings();
-
-      // بارگذاری لاگ‌های محلی
-      _loadLocalLogs();
-
-      // بارگذاری لاگ‌های سرور
-      await _loadServerLogs();
-
+      print('✅ تمام تست‌های سیستم با موفقیت انجام شد');
       LoggerService.info('HomePage', 'تمام تست‌های سیستم با موفقیت انجام شد');
     } catch (e) {
+      print('❌ خطا در تست سیستم: $e');
       LoggerService.error('HomePage', 'خطا در تست سیستم', e);
       setState(() {
         _connectionStatus = 'خطا در اتصال: $e';
@@ -61,7 +50,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  /// تست اتصال Backend PHP
   Future<void> _testBackendConnection() async {
     try {
       final result = await ApiService.testConnection();
@@ -72,49 +60,28 @@ class _HomePageState extends State<HomePage> {
       });
 
       if (_serverConnected) {
-        LoggerService.info('Backend', 'اتصال Backend برقرار است');
+        print('✅ اتصال Backend برقرار است');
       } else {
-        LoggerService.warning('Backend', 'مشکل در اتصال Backend');
+        print('⚠️ مشکل در اتصال Backend');
       }
     } catch (e) {
       setState(() {
         _serverConnected = false;
         _connectionStatus = 'خطا در اتصال: $e';
       });
-      LoggerService.error('Backend', 'خطا در تست اتصال', e);
+      print('❌ خطا در تست اتصال Backend: $e');
     }
   }
 
-  /// بارگذاری تنظیمات سیستم
   Future<void> _loadSystemSettings() async {
     try {
       final settings = await ApiService.getSettings();
       setState(() {
         _systemSettings = settings;
       });
-      LoggerService.info('Settings', 'تنظیمات بارگذاری شد: ${settings.length} مورد');
+      print('📋 تنظیمات بارگذاری شد: ${settings.length} مورد');
     } catch (e) {
-      LoggerService.error('Settings', 'خطا در بارگذاری تنظیمات', e);
-    }
-  }
-
-  /// بارگذاری لاگ‌های محلی
-  void _loadLocalLogs() {
-    setState(() {
-      _recentLogs = LoggerService.getRecentLogs(10);
-    });
-  }
-
-  /// بارگذاری لاگ‌های سرور
-  Future<void> _loadServerLogs() async {
-    try {
-      final logs = await ApiService.getLogs(limit: 10);
-      setState(() {
-        _serverLogs = logs;
-      });
-      LoggerService.info('ServerLogs', 'لاگ‌های سرور بارگذاری شد: ${logs.length} مورد');
-    } catch (e) {
-      LoggerService.error('ServerLogs', 'خطا در بارگذاری لاگ‌های سرور', e);
+      print('❌ خطا در بارگذاری تنظیمات: $e');
     }
   }
 
@@ -155,10 +122,6 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 16),
                     _buildSettingsCard(),
                     const SizedBox(height: 16),
-                    _buildLocalLogsCard(),
-                    const SizedBox(height: 16),
-                    _buildServerLogsCard(),
-                    const SizedBox(height: 16),
                     _buildActionsCard(),
                   ],
                 ),
@@ -167,7 +130,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// کارت وضعیت Backend
   Widget _buildBackendStatusCard() {
     return Card(
       elevation: 4,
@@ -234,7 +196,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// کارت اطلاعات سیستم
   Widget _buildSystemInfoCard() {
     if (_systemInfo == null) return const SizedBox.shrink();
 
@@ -262,7 +223,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// کارت تنظیمات سیستم
   Widget _buildSettingsCard() {
     return Card(
       elevation: 4,
@@ -307,110 +267,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// کارت لاگ‌های محلی
-  Widget _buildLocalLogsCard() {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'لاگ‌های محلی (${_recentLogs.length})',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                IconButton(
-                  onPressed: () {
-                    _loadLocalLogs();
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'بروزرسانی',
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (_recentLogs.isEmpty)
-              const Text('لاگی یافت نشد')
-            else
-              Column(
-                children: _recentLogs.take(5).map((log) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: _getLogColor(log.level).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: _getLogColor(log.level).withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    log.displayText,
-                    style: const TextStyle(fontSize: 12, fontFamily: 'Courier'),
-                  ),
-                )).toList(),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// کارت لاگ‌های سرور
-  Widget _buildServerLogsCard() {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'لاگ‌های سرور (${_serverLogs.length})',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                IconButton(
-                  onPressed: _loadServerLogs,
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'بروزرسانی',
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (_serverLogs.isEmpty)
-              const Text('لاگی در سرور یافت نشد')
-            else
-              Column(
-                children: _serverLogs.take(5).map((log) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: Colors.blue.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    '${log['created_at']} [${log['log_level']}] ${log['log_category']}: ${log['log_message']}',
-                    style: const TextStyle(fontSize: 12, fontFamily: 'Courier'),
-                  ),
-                )).toList(),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// کارت اقدامات
   Widget _buildActionsCard() {
     return Card(
       elevation: 4,
@@ -431,14 +287,6 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () => _sendTestLog(),
                     icon: const Icon(Icons.bug_report, size: 18),
                     label: const Text('ارسال لاگ تست'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: LoggerService.clearLocalLogs,
-                    icon: const Icon(Icons.clear_all, size: 18),
-                    label: const Text('پاک کردن لاگ‌ها'),
                   ),
                 ),
               ],
@@ -462,7 +310,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// ساخت ردیف اطلاعات
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -484,47 +331,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// دریافت رنگ براساس سطح لاگ
-  Color _getLogColor(String level) {
-    switch (level.toUpperCase()) {
-      case 'ERROR':
-      case 'SEVERE':
-        return Colors.red;
-      case 'WARNING':
-        return Colors.orange;
-      case 'INFO':
-        return Colors.blue;
-      case 'DEBUG':
-      case 'FINE':
-        return Colors.green;
-      default:
-        return Colors.grey;
+  void _sendTestLog() async {
+    try {
+      await ApiService.sendLog('INFO', 'Test', 'این یک لاگ تستی است از Flutter');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لاگ تست ارسال شد'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('خطا در ارسال لاگ: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
-  /// ارسال لاگ تست
-  void _sendTestLog() {
-    LoggerService.info('Test', 'این یک لاگ تستی است از Flutter', {
-      'timestamp': DateTime.now().toIso8601String(),
-      'source': 'HomePage',
-      'type': 'manual_test'
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('لاگ تست ارسال شد'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    // بروزرسانی لاگ‌ها پس از 2 ثانیه
-    Future.delayed(const Duration(seconds: 2), () {
-      _loadLocalLogs();
-      _loadServerLogs();
-    });
-  }
-
-  /// نمایش همه تنظیمات
   void _showAllSettings() {
     showDialog(
       context: context,
@@ -558,9 +388,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// باز کردن Backend در مرورگر
   void _openBackendInBrowser() {
-    LoggerService.info('HomePage', 'درخواست باز کردن Backend در مرورگر');
+    print('🌐 درخواست باز کردن Backend در مرورگر');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('برای مشاهده API به: http://localhost/datasave/backend/ بروید'),
