@@ -1,0 +1,67 @@
+{
+  "name": "persian-rtl-support",
+  "displayName": "Persian RTL Support for VS Code",
+  "description": "بهبود پشتیبانی RTL و فونت فارسی در VS Code",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Language Packs"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "persianRtl.toggleDirection",
+        "title": "تغییر جهت متن",
+        "category": "Persian RTL"
+      },
+      {
+        "command": "persianRtl.applyVazirmButton",
+        "title": "اعمال فونت وزیرمتن",
+        "category": "Persian RTL"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "persianRtl.toggleDirection",
+        "key": "ctrl+alt+d",
+        "mac": "cmd+alt+d"
+      }
+    ],
+    "configuration": {
+      "title": "Persian RTL Support",
+      "properties": {
+        "persianRtl.autoDetectDirection": {
+          "type": "boolean",
+          "default": true,
+          "description": "تشخیص خودکار جهت متن بر اساس محتوا"
+        },
+        "persianRtl.defaultFont": {
+          "type": "string",
+          "default": "Vazirmatn",
+          "description": "فونت پیش‌فرض برای متن‌های فارسی"
+        },
+        "persianRtl.enableChatSupport": {
+          "type": "boolean",
+          "default": true,
+          "description": "فعال‌سازی پشتیبانی RTL در چت کوپایلوت"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4"
+  }
+}

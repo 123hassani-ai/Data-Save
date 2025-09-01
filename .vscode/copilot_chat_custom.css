@@ -1,0 +1,74 @@
+/* 
+ * فایل CSS سفارشی برای بهبود فونت چت کوپایلوت
+ * Custom CSS for GitHub Copilot Chat Font Enhancement
+ */
+
+/* تنظیمات کلی چت کوپایلوت */
+.chat-widget,
+.chat-input,
+.chat-response,
+.monaco-editor,
+.copilot-chat-widget {
+  font-family: "Vazirmatn", "SF Mono", "Monaco", "Menlo", monospace !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  direction: auto !important;
+}
+
+/* متن‌های فارسی در چت */
+.chat-response-text,
+.chat-input-text {
+  font-family: "Vazirmatn", "Tahoma", "Arial" !important;
+  unicode-bidi: plaintext !important;
+  text-align: start !important;
+}
+
+/* بهبود نمایش کد در چت */
+.monaco-editor .view-lines {
+  font-family: "Vazirmatn", "JetBrains Mono", "Fira Code", monospace !important;
+}
+
+/* تنظیمات RTL برای متن‌های فارسی */
+[dir="rtl"],
+.rtl-text,
+.persian-text {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: "Vazirmatn" !important;
+}
+
+/* بهبود input box چت */
+.chat-input-container input,
+.chat-input-container textarea {
+  font-family: "Vazirmatn", "SF Mono", monospace !important;
+  font-size: 14px !important;
+  direction: auto !important;
+}
+
+/* کدهای inline در چت */
+code,
+.inline-code {
+  font-family: "Vazirmatn", "JetBrains Mono", monospace !important;
+  background-color: rgba(110, 118, 129, 0.2) !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+}
+
+/* بلوک‌های کد */
+pre code {
+  font-family: "Vazirmatn", "JetBrains Mono", "Fira Code", monospace !important;
+  direction: ltr !important;
+}
+
+/* پیام‌های چت */
+.chat-message {
+  font-family: "Vazirmatn", "Tahoma", "Arial" !important;
+  line-height: 1.5 !important;
+}
+
+/* کاراکترهای فارسی */
+.fa-char,
+.persian-char {
+  font-family: "Vazirmatn" !important;
+  font-weight: 400 !important;
+}

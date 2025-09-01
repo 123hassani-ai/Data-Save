@@ -1,0 +1,52 @@
+name: datasave
+description: پلتفرم هوشمند فرم‌ساز - ایجاد و مدیریت فرم‌های آنلاین
+publish_to: 'none'
+
+# نسخه و شماره ساخت
+version: 1.0.0+1
+
+# محیط توسعه
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.16.0"
+
+# کتابخانه‌های مورد نیاز
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # پشتیبانی زبان فارسی و RTL
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  
+  # مدیریت وضعیت برنامه
+  provider: ^6.1.1
+  
+  # ارتباط با سرور و API
+  http: ^1.1.2
+  dio: ^5.4.0
+  
+  # اتصال به پایگاه داده MySQL
+  mysql1: ^0.20.0
+  
+  # ابزارهای جانبی
+  uuid: ^4.2.1
+  shared_preferences: ^2.2.2
+  cupertino_icons: ^1.0.8
+
+# کتابخانه‌های توسعه
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+# تنظیمات Flutter
+flutter:
+  uses-material-design: true
+  generate: true
+
+  # اضافه کردن پوشه‌های assets
+  assets:
+    - web/fonts/
+    - web/vazirmatn.css

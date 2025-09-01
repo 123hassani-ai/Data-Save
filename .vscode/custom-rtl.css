@@ -1,0 +1,61 @@
+/* فایل CSS سفارشی برای بهبود نمایش RTL در VS Code */
+/* Custom CSS for improved RTL display in VS Code */
+
+/* بهبود فونت و جهت متن در چت کوپایلوت */
+.chat-input-container,
+.chat-message-container,
+.monaco-editor,
+.view-lines {
+  font-family: "Vazirmatn", "Fira Code", Consolas, monospace !important;
+  direction: auto;
+  text-align: start;
+}
+
+/* تنظیمات خاص برای متن‌های فارسی */
+.chat-message:lang(fa),
+.monaco-editor .view-line:has([lang="fa"]) {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: "Vazirmatn", sans-serif !important;
+}
+
+/* بهبود نمایش متن مختلط فارسی-انگلیسی */
+.chat-message {
+  unicode-bidi: plaintext !important;
+  direction: auto !important;
+}
+
+/* تنظیمات فونت برای ورودی چت */
+.chat-input,
+.monaco-editor-container .monaco-editor .inputarea {
+  font-family: "Vazirmatn", monospace !important;
+  direction: auto !important;
+}
+
+/* بهبود نمایش کد فارسی در ویرایشگر */
+.monaco-editor .view-line .mtk1:contains("[\u0600-\u06FF]") {
+  direction: rtl !important;
+  font-family: "Vazirmatn", monospace !important;
+}
+
+/* تنظیمات ترمینال */
+/* .terminal-wrapper .xterm-screen,
+.integrated-terminal .xterm-screen {
+  font-family: "Vazirmatn", "Fira Code", monospace !important;
+  direction: auto !important;
+} */
+
+/* بهبود نمایش در پنل مشکلات */
+.markers-panel .monaco-list-row,
+.output-panel .monaco-list-row {
+  direction: auto !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* تنظیمات کلی برای نمایش بهتر متن */
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  -moz-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
+}

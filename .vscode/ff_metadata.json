@@ -1,0 +1,11 @@
+{
+  "projectId": "smart_ai123",
+  "version": "1.0.0",
+  "framework": "flutter",
+  "lastSync": "2025-08-26T00:00:00.000Z",
+  "customCodeEnabled": true,
+  "dependencies": {
+    "flutter": ">=3.0.0",
+    "dart": ">=3.0.0"
+  }
+}
