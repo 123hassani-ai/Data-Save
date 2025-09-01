@@ -20,5 +20,25 @@
 }
 
 body {
-  font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+  font-family: 'Vazirmatn', 'Noto Sans Arabic', 'Noto Sans', 'Tahoma', 'Arial', sans-serif;
+  direction: rtl;
+}
+
+/* فونت‌های fallback برای متن‌های مختلف */
+* {
+  font-family: 'Vazirmatn', 'Noto Sans Arabic', 'Noto Sans', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* تنظیمات خاص برای کاراکترهای فارسی */
+.persian-text {
+  font-family: 'Vazirmatn', 'Noto Sans Arabic', 'Noto Sans', sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* تنظیمات برای کاراکترهای لاتین */
+.latin-text {
+  font-family: 'Vazirmatn', 'Noto Sans', 'Arial', sans-serif;
+  direction: ltr;
+  text-align: left;
 }

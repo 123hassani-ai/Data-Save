@@ -16,7 +16,13 @@ try {
     // رمزگشایی فیلدهای encrypted (در صورت نیاز)
     foreach ($settings as &$setting) {
         if ($setting['setting_type'] === 'encrypted' && !empty($setting['setting_value'])) {
-            $setting['setting_value'] = '***مخفی***'; // عدم نمایش مقادیر حساس
+            // برای OpenAI key، مقدار کامل را برگردان (رمزگشایی در صورت نیاز)
+            if ($setting['setting_key'] === 'openai_api_key') {
+                // برگرداندن کلید کامل
+                continue;
+            } else {
+                $setting['setting_value'] = '***مخفی***'; // عدم نمایش مقادیر حساس دیگر
+            }
         }
     }
     

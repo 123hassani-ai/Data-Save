@@ -57,3 +57,14 @@ flutter:
   assets:
     - web/fonts/
     - web/vazirmatn.css
+
+  # تعریف فونت‌های فارسی
+  fonts:
+    - family: Vazirmatn
+      fonts:
+        - asset: web/fonts/Vazirmatn-Regular.ttf
+          weight: 400
+        - asset: web/fonts/Vazirmatn-Bold.ttf
+          weight: 700
+        - asset: web/fonts/Vazirmatn-Light.ttf
+          weight: 300

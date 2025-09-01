@@ -62,17 +62,51 @@ class LoggerService {
   /// ارسال لاگ به Backend PHP
   static void _sendLogToBackend(LogEntry entry) {
     // اجرای async بدون انتظار
-    Future(() async {
+    Future.delayed(const Duration(milliseconds: 100), () async {
       try {
-        await ApiService.sendLog(
+        final success = await ApiService.sendLog(
           entry.level,
           entry.category,
           entry.message,
           entry.error != null ? {'error': entry.error} : null,
         );
+        
+        if (!success && kDebugMode) {
+          print('⚠️ ارسال لاگ به سرور ناموفق بود: ${entry.message}');
+        }
       } catch (e) {
         if (kDebugMode) {
-          print('خطا در ارسال لاگ به سرور: $e');
+          print('❌ خطا در ارسال لاگ به سرور: $e');
+          print('   📋 لاگ ناموفق: [${entry.level}] ${entry.category}: ${entry.message}');
+        }
+        
+        // اگر خطای مهمی است، بیافراینیم تلاش کنیم دوباره ارسال کنیم
+        if (entry.level == 'SEVERE' || entry.level == 'ERROR') {
+          _retryLogSend(entry, 1);
+        }
+      }
+    });
+  }
+  
+  /// تلاش مجدد برای ارسال لاگ‌های مهم
+  static void _retryLogSend(LogEntry entry, int attempt) {
+    if (attempt > 3) return; // حداکثر 3 تلاش
+    
+    Future.delayed(Duration(seconds: attempt * 2), () async {
+      try {
+        final success = await ApiService.sendLog(
+          entry.level,
+          entry.category,
+          entry.message,
+          entry.error != null ? {'error': entry.error} : null,
+        );
+        
+        if (!success && attempt < 3) {
+          _retryLogSend(entry, attempt + 1);
+        }
+      } catch (e) {
+        if (attempt < 3) {
+          _retryLogSend(entry, attempt + 1);
         }
       }
     });
@@ -99,6 +133,11 @@ class LoggerService {
 
   /// ثبت لاگ ERROR
   static void error(String category, String message, [dynamic error]) {
+    _logger.severe('[$category] $message', error);
+  }
+
+  /// ثبت لاگ SEVERE (خطاهای بحرانی)
+  static void severe(String category, String message, [dynamic error]) {
     _logger.severe('[$category] $message', error);
   }
 

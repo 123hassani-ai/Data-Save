@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'presentation/pages/home/home_page_simple.dart';
+import 'package:provider/provider.dart';
+import 'presentation/controllers/settings_controller.dart';
+import 'presentation/controllers/logs_controller.dart';
+import 'presentation/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/logger/logger_service.dart';
 import 'core/services/api_service.dart';
@@ -41,23 +44,30 @@ class DataSaveApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DataSave - فرم‌ساز هوشمند',
-      debugShowCheckedModeBanner: false,
-      
-      // پشتیبانی از زبان فارسی و RTL
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsController()),
+        ChangeNotifierProvider(create: (_) => LogsController()),
       ],
-      supportedLocales: const [Locale('fa', 'IR')],
-      
-      // اعمال تم سفارشی با فونت Vazirmatn
-      theme: AppTheme.lightTheme,
-      
-      // صفحه اصلی
-      home: const HomePage(),
+      child: MaterialApp(
+        title: 'DataSave - فرم‌ساز هوشمند',
+        debugShowCheckedModeBanner: false,
+        
+        // پشتیبانی از زبان فارسی و RTL
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('fa', 'IR')],
+        
+        // اعمال تم سفارشی با فونت Vazirmatn
+        theme: AppTheme.lightTheme,
+        
+        // تنظیم مسیرها
+        initialRoute: AppRoutes.home,
+        onGenerateRoute: AppRoutes.generateRoute,
+      ),
     );
   }
 }
