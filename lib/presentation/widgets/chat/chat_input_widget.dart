@@ -108,7 +108,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
                       borderSide: BorderSide.none,
                     ),
                     filled: true,
-                    fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                    fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
