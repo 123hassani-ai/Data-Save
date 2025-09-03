@@ -3,7 +3,7 @@
  * تنظیمات اتصال به پایگاه داده MySQL
  */
 class DatabaseConfig {
-    public const HOST = 'localhost';
+    public const HOST = '127.0.0.1';
     public const PORT = 3307;
     public const DATABASE = 'datasave_db';
     public const USERNAME = 'root';

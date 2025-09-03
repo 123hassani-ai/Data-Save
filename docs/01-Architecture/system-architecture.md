@@ -2,10 +2,10 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-01-09
-- **Version:** 1.0
+- **Last Updated:** 2025-03-03 (MVP 4.0 Analysis)
+- **Version:** 2.0.0 (MVP 4.0 Business Intelligence Architecture)
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/lib/`, `/backend/`, `/pubspec.yaml`
+- **Related Files:** `/lib/`, `/backend/`, `/pubspec.yaml`, MVP 4.0 Services
 
 ## 🎯 Overview
 نمای کلی معماری DataSave بر اساس Clean Architecture با جداسازی واضح لایه‌ها و مسئولیت‌ها.
@@ -50,77 +50,138 @@ Persian Language Support:
 
 ## 🌐 نمای کلی سیستم - System Overview
 
-### High-Level Architecture Diagram
+### High-Level Architecture Diagram (MVP 4.0 Evolution)
 ```mermaid
 graph TB
     subgraph "Client Layer"
         WEB[Flutter Web PWA]
         MOB[Mobile Browsers]
         DESK[Desktop Browsers]
+        WP[WordPress Sites]
+        EMBED[External Websites]
     end
     
     subgraph "Frontend - Flutter Web"
         UI[Presentation Layer]
         BL[Business Logic]
         DATA[Data Layer]
+        
+        subgraph "MVP 4.0 Components"
+            DASH[Dashboard Intelligence]
+            WIZARD[AI Form Wizard]
+            CHAT[AI Chat Explorer]
+            ANALYTICS[Analytics Dashboard]
+        end
     end
     
-    subgraph "Backend - PHP"
+    subgraph "Backend - PHP (Enhanced)"
         API[REST APIs]
         LOGIC[Business Logic]
         DB_LAYER[Database Layer]
+        
+        subgraph "AI Services"
+            NLP[Persian NLP Service]
+            SQL_GEN[SQL Generator]
+            VALIDATOR[Response Validator]
+        end
+        
+        subgraph "Form as a Service"
+            RENDERER[Form Renderer]
+            EMBED_ENGINE[Embed Engine]
+            WP_SERVICE[WordPress Service]
+        end
     end
     
     subgraph "External Services"
         OPENAI[OpenAI GPT-4]
-        CDN[Font CDN]
+        CDN[Assets CDN]
+        WP_API[WordPress API]
     end
     
     subgraph "Data Storage"
         MYSQL[(MySQL 8.0)]
         LOGS[(Log Files)]
+        CACHE[(Analytics Cache)]
     end
     
     WEB --> UI
     MOB --> UI
     DESK --> UI
+    WP --> EMBED_ENGINE
+    EMBED --> EMBED_ENGINE
     
     UI <--> BL
     BL <--> DATA
     DATA <--> API
     
+    UI --> DASH
+    UI --> WIZARD
+    UI --> CHAT
+    UI --> ANALYTICS
+    
     API <--> LOGIC
     LOGIC <--> DB_LAYER
     DB_LAYER <--> MYSQL
     
-    API <--> OPENAI
-    UI <--> CDN
+    LOGIC <--> NLP
+    LOGIC <--> SQL_GEN
+    LOGIC <--> VALIDATOR
+    LOGIC <--> RENDERER
+    
+    NLP <--> OPENAI
+    SQL_GEN <--> OPENAI
+    WP_SERVICE <--> WP_API
+    RENDERER <--> CDN
     
     LOGIC --> LOGS
+    LOGIC <--> CACHE
 ```
 
-### System Components
+### System Components (Enhanced for MVP 4.0)
 ```yaml
 Frontend (Flutter Web):
-  - Single Page Application (SPA)
-  - Progressive Web App (PWA)
-  - Material Design 3 UI
-  - Responsive layout
-  - Offline capabilities (future)
+  Core Features:
+    - Single Page Application (SPA)
+    - Progressive Web App (PWA)
+    - Material Design 3 UI
+    - Responsive layout
+    - Persian RTL complete
+
+  MVP 4.0 Enhancements:
+    - Dashboard Intelligence Hub
+    - AI Chat Interface
+    - Form Designer Wizard
+    - Advanced Analytics Dashboard
+    - Real-time data visualization
 
 Backend (PHP):
-  - RESTful API architecture
-  - Stateless design
-  - JSON communication
-  - CORS enabled
-  - Modular structure
+  Core Features:
+    - RESTful API architecture
+    - Stateless design
+    - JSON communication
+    - CORS enabled
+    - Modular structure
+
+  MVP 4.0 Enhancements:
+    - AI Intelligence Services
+    - Form Renderer Engine
+    - Analytics Processing
+    - WordPress Integration
+    - Real-time capabilities
 
 Database (MySQL):
-  - Persian character support
-  - Optimized indexes
-  - Partitioned tables
-  - Foreign key constraints
-  - Audit trail logging
+  Core Features:
+    - Persian character support
+    - Optimized indexes
+    - Foreign key constraints
+    - Audit trail logging
+
+  MVP 4.0 Enhancements:
+    - AI conversation storage
+    - Analytics caching layer
+    - Embed tracking system
+    - Insight pattern storage
+    - External integration configs
 ```
 
 ## 🎯 لایه‌های معماری - Architecture Layers
@@ -231,21 +292,30 @@ lib/core/
     └── encryption_helper.dart
 ```
 
-### 4. Backend API Layer (PHP)
+### 4. Backend API Layer (PHP) - Enhanced for MVP 4.0
 ```yaml
 Location: backend/api/
 Purpose: Business logic and data processing
 Components:
-  - REST endpoints
-  - Request validation
-  - Business logic processing
-  - Response formatting
+  Core Services:
+    - REST endpoints
+    - Request validation
+    - Business logic processing
+    - Response formatting
+
+  MVP 4.0 Services:
+    - AI Intelligence Service
+    - Form Renderer Service
+    - Analytics Engine
+    - WordPress Integration
+    - Real-time processing
 
 Technologies:
   - PHP 8.x
   - PDO for database
   - JSON communication
   - Custom routing
+  - OpenAI API integration
 
 Responsibilities:
   - Request processing
@@ -253,31 +323,85 @@ Responsibilities:
   - Data validation
   - Response generation
   - Error handling
+  - AI processing orchestration
+  - Form embedding service
+  - Analytics computation
 ```
 
-#### Backend Structure
+#### Backend Structure (Enhanced)
 ```
 backend/
 ├── api/
-│   ├── settings/
+│   ├── settings/ (existing)
 │   │   ├── get.php
 │   │   ├── update.php
 │   │   └── test.php
-│   ├── logs/
+│   ├── logs/ (existing)
 │   │   ├── list.php
 │   │   ├── create.php
 │   │   ├── stats.php
 │   │   └── clear.php
-│   └── system/
-│       ├── info.php
-│       └── status.php
-├── classes/
+│   ├── system/ (existing)
+│   │   ├── info.php
+│   │   └── status.php
+│   ├── ai/ (MVP 4.0 NEW)
+│   │   ├── chat.php
+│   │   ├── generate-form.php
+│   │   ├── analyze-data.php
+│   │   └── suggestions.php
+│   ├── analytics/ (MVP 4.0 NEW)
+│   │   ├── dashboard-data.php
+│   │   ├── custom-query.php
+│   │   ├── insights.php
+│   │   └── predictions.php
+│   ├── embed/ (MVP 4.0 NEW)
+│   │   ├── form.php
+│   │   ├── submit.php
+│   │   ├── analytics.php
+│   │   └── config.php
+│   ├── wordpress/ (MVP 4.0 NEW)
+│   │   ├── plugin-auth.php
+│   │   ├── forms-list.php
+│   │   ├── embed-form.php
+│   │   └── analytics.php
+│   └── insights/ (MVP 4.0 NEW)
+│       ├── patterns.php
+│       ├── query.php
+│       ├── predictions.php
+│       └── recommendations.php
+├── services/ (MVP 4.0 NEW)
+│   ├── ai/
+│   │   ├── AINLPService.php
+│   │   ├── SQLGeneratorService.php
+│   │   ├── ValidationService.php
+│   │   └── InsightService.php
+│   ├── embed/
+│   │   ├── FormEmbedService.php
+│   │   ├── ThemeService.php
+│   │   ├── SecurityService.php
+│   │   └── WordPressService.php
+│   └── analytics/
+│       ├── AnalyticsService.php
+│       ├── QueryBuilderService.php
+│       ├── CacheService.php
+│       └── ReportService.php
+├── classes/ (existing + enhanced)
 │   ├── ApiResponse.php
 │   ├── Logger.php
-│   └── Database.php
+│   └── Database/
+│       ├── Form.php (enhanced)
+│       ├── FormResponse.php
+│       ├── FormWidget.php
+│       ├── User.php
+│       ├── AIConversation.php (NEW)
+│       ├── FormEmbed.php (NEW)
+│       ├── AnalyticsCache.php (NEW)
+│       ├── AIInsight.php (NEW)
+│       └── ExternalIntegration.php (NEW)
 └── config/
     ├── database.php
-    └── cors.php
+    ├── cors.php
+    └── ai.php (NEW)
 ```
 
 ### 5. Database Layer (MySQL)

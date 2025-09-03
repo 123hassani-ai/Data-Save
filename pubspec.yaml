@@ -18,35 +18,21 @@ dependencies:
   # پشتیبانی زبان فارسی و RTL
   flutter_localizations:
     sdk: flutter
-  intl: ^0.20.2
   
-  # مدیریت وضعیت برنامه
-  provider: ^6.1.1
+  # مدیریت وضعیت برنامه - از کتابخانه‌های SDK استفاده کنیم
+  # provider: ^6.0.5
   
-  # ارتباط با سرور و API
-  http: ^1.1.2
-  dio: ^5.4.0
+  # ارتباط با سرور و API - از داخل SDK
+  # http: ^1.1.0
   
-  # سیستم لاگینگ
-  logging: ^1.2.0
-  
-  # مسیر و فایل سیستم
-  path: ^1.9.0
-  
-  # رمزنگاری و JSON
-  crypto: ^3.0.3
-  convert: ^3.1.1
-  
-  # ابزارهای جانبی
-  uuid: ^4.2.1
-  shared_preferences: ^2.2.2
-  cupertino_icons: ^1.0.8
+  # Material Icons
+  cupertino_icons: ^1.0.2
 
 # کتابخانه‌های توسعه
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  # flutter_lints: ^3.0.0
 
 # تنظیمات Flutter
 flutter:

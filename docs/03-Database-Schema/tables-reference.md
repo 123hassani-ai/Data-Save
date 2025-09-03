@@ -2,10 +2,10 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-09-01
-- **Version:** 5.1.0
+- **Last Updated:** 2025-03-03 (MVP 4.0 Analysis)
+- **Version:** 6.0.0 (MVP 4.0 Business Intelligence Evolution)
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/database_setup.sql`, `/backend/config/database.php`
+- **Related Files:** `/database_setup.sql`, `/backend/config/database.php`, MVP 4.0 Migration Scripts
 
 ## 🎯 Overview
 مرجع کامل همه جداول دیتابیس DataSave به همراه جداول جدید Form Builder Engine مرحله 5.1
@@ -14,7 +14,34 @@
 - [جداول اصلی سیستم](#جداول-اصلی-سیستم)
   - [system_settings](#جدول-system_settings)
   - [system_logs](#جدول-system_logs)
-- [جداول Form Builder](#جداول-form-builder)
+- [جداول F## 📊 خلاصه جداول - Tables Summary
+
+### آمار کلی
+| Table | Status | Records | Engine | Charset |
+|-------|--------|---------|--------|---------|
+| `system_settings` | ✅ Active | 9 | InnoDB | utf8mb4_persian_ci |
+| `system_logs` | ✅ Active | 500+ | InnoDB | utf8mb4_persian_ci |
+| `users` | ✅ Active | 2 | InnoDB | utf8mb4_persian_ci |
+| `forms` | ✅ Active | 1 | InnoDB | utf8mb4_persian_ci |
+| `form_widgets` | ✅ Active | 10 | InnoDB | utf8mb4_persian_ci |
+| `form_responses` | ✅ Active | 0 | InnoDB | utf8mb4_persian_ci |
+| `ai_conversations` | 📅 MVP 4.0 | 0 | InnoDB | utf8mb4_persian_ci |
+| `form_embeds` | 📅 MVP 4.0 | 0 | InnoDB | utf8mb4_persian_ci |
+| `analytics_cache` | 📅 MVP 4.0 | 0 | InnoDB | utf8mb4_persian_ci |
+| `ai_insights` | 📅 MVP 4.0 | 0 | InnoDB | utf8mb4_persian_ci |
+| `external_integrations` | 📅 MVP 4.0 | 0 | InnoDB | utf8mb4_persian_ci |
+| `sessions` | 📅 Planned | 0 | InnoDB | utf8mb4_persian_ci |
+
+### MVP 4.0 Evolution Summary
+```yaml
+Current Tables (Phase 5.1): 6 tables operational
+MVP 4.0 Addition: 5 new tables for BI platform
+Future Addition: 1 table for advanced security
+
+Total after MVP 4.0: 12 tables
+Enhancement Strategy: Preserve existing + Add new functionality
+Migration Risk: LOW (no changes to existing tables)
+```(#جداول-form-builder)
   - [users](#جدول-users)
   - [forms](#جدول-forms) 
   - [form_widgets](#جدول-form_widgets)
@@ -348,7 +375,153 @@ public function getLogs(array $filters = [], int $limit = 50, int $offset = 0): 
 
 ---
 
-## 🔮 جداول آینده - Future Tables
+## 🔮 جداول آینده - Future Tables (MVP 4.0)
+
+### MVP 4.0 Business Intelligence Tables
+
+#### جدول ai_conversations
+
+#### 📋 توضیحات کلی
+**Purpose:** ذخیره تاریخچه مکالمات AI برای Chat Data Explorer و Form Designer Wizard  
+**Status:** MVP 4.0 Phase 2-4  
+**Engine:** InnoDB
+
+#### 🏗️ ساختار پیشنهادی
+```sql
+CREATE TABLE `ai_conversations` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `user_id` INT UNSIGNED,
+  `conversation_type` ENUM('form_creation', 'data_query', 'insight_request', 'general_chat') NOT NULL,
+  `messages` JSON NOT NULL COMMENT 'آرایه پیام‌های مکالمه',
+  `context` JSON COMMENT 'Context اطلاعات مکالمه',
+  `status` ENUM('active', 'completed', 'error') DEFAULT 'active',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_user_type (user_id, conversation_type),
+  INDEX idx_created_at (created_at),
+  INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
+COMMENT='مکالمات AI برای Chat Explorer و Form Wizard';
+```
+
+#### جدول form_embeds
+
+#### 📋 توضیحات کلی
+**Purpose:** ردیابی فرم‌های embed شده در وبسایت‌های خارجی (Form as a Service)  
+**Status:** MVP 4.0 Phase 3  
+**Engine:** InnoDB
+
+#### 🏗️ ساختار پیشنهادی
+```sql
+CREATE TABLE `form_embeds` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `form_id` INT UNSIGNED NOT NULL,
+  `embed_domain` VARCHAR(255) COMMENT 'دامنه وبسایت embed شده',
+  `embed_type` ENUM('wordpress', 'html', 'javascript', 'iframe') NOT NULL,
+  `embed_config` JSON COMMENT 'تنظیمات embed',
+  `usage_stats` JSON COMMENT 'آمار استفاده',
+  `is_active` BOOLEAN DEFAULT TRUE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `last_accessed` TIMESTAMP,
+  
+  FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
+  INDEX idx_form_domain (form_id, embed_domain),
+  INDEX idx_embed_type (embed_type),
+  INDEX idx_active_created (is_active, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
+COMMENT='ردیابی فرم‌های embed شده در وبسایت‌های خارجی';
+```
+
+#### جدول analytics_cache
+
+#### 📋 توضیحات کلی
+**Purpose:** کش کردن نتایج query های پیچیده Analytics برای بهبود عملکرد  
+**Status:** MVP 4.0 Phase 1-4  
+**Engine:** InnoDB
+
+#### 🏗️ ساختار پیشنهادی
+```sql
+CREATE TABLE `analytics_cache` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `cache_key` VARCHAR(255) UNIQUE NOT NULL,
+  `query_hash` VARCHAR(64) NOT NULL COMMENT 'MD5 hash of original query',
+  `query_type` VARCHAR(50) COMMENT 'نوع query (dashboard, insight, custom)',
+  `result_data` JSON NOT NULL COMMENT 'نتیجه query',
+  `metadata` JSON COMMENT 'metadata اضافی',
+  `expires_at` TIMESTAMP NOT NULL,
+  `hit_count` INT UNSIGNED DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `last_accessed` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  UNIQUE KEY uk_cache_key (cache_key),
+  INDEX idx_query_hash (query_hash),
+  INDEX idx_expires_at (expires_at),
+  INDEX idx_query_type (query_type),
+  INDEX idx_hit_count (hit_count)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
+COMMENT='کش Analytics queries برای بهبود عملکرد';
+```
+
+#### جدول ai_insights
+
+#### 📋 توضیحات کلی
+**Purpose:** ذخیره insights تولید شده توسط AI Analytics Consultant  
+**Status:** MVP 4.0 Phase 4  
+**Engine:** InnoDB
+
+#### 🏗️ ساختار پیشنهادی
+```sql
+CREATE TABLE `ai_insights` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `insight_type` VARCHAR(100) NOT NULL COMMENT 'نوع insight (pattern, prediction, recommendation)',
+  `title` VARCHAR(255) NOT NULL COMMENT 'عنوان insight',
+  `description` TEXT COMMENT 'توضیحات تفصیلی',
+  `data` JSON NOT NULL COMMENT 'داده‌های insight',
+  `confidence_score` DECIMAL(3,2) COMMENT 'امتیاز اطمینان (0.00-1.00)',
+  `related_forms` JSON COMMENT 'فرم‌های مرتبط',
+  `is_active` BOOLEAN DEFAULT TRUE,
+  `expires_at` TIMESTAMP COMMENT 'زمان انقضای insight',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_insight_type (insight_type),
+  INDEX idx_confidence_score (confidence_score),
+  INDEX idx_active_created (is_active, created_at),
+  INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
+COMMENT='AI Insights تولید شده توسط Analytics Consultant';
+```
+
+#### جدول external_integrations
+
+#### 📋 توضیحات کلی
+**Purpose:** مدیریت integration های خارجی (WordPress Plugin، CDN، etc)  
+**Status:** MVP 4.0 Phase 3  
+**Engine:** InnoDB
+
+#### 🏗️ ساختار پیشنهادی
+```sql
+CREATE TABLE `external_integrations` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `integration_type` VARCHAR(50) NOT NULL COMMENT 'نوع integration (wordpress, cdn, webhook)',
+  `integration_name` VARCHAR(100) NOT NULL,
+  `config` JSON NOT NULL COMMENT 'تنظیمات integration',
+  `credentials` JSON COMMENT 'اطلاعات احراز هویت (encrypted)',
+  `status` ENUM('active', 'inactive', 'error', 'pending') DEFAULT 'pending',
+  `last_sync` TIMESTAMP COMMENT 'آخرین sync موفق',
+  `error_log` TEXT COMMENT 'لاگ خطاهای اخیر',
+  `usage_stats` JSON COMMENT 'آمار استفاده',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_integration_type (integration_type),
+  INDEX idx_status (status),
+  INDEX idx_last_sync (last_sync)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_persian_ci
+COMMENT='مدیریت integration های خارجی';
+```
 
 ### جدول sessions (برنامه‌ریزی شده)
 
@@ -394,7 +567,7 @@ CREATE TABLE `sessions` (
 | `v_popular_widgets` | ویجت‌های پرکاربرد | form_widgets |
 | `v_recent_responses` | پاسخ‌های اخیر | form_responses, forms |
 
-### Storage Requirements (واقعی)
+### Storage Requirements (واقعی + MVP 4.0)
 ```yaml
 Current Database Size: ~2MB
 Current Tables:
@@ -406,10 +579,17 @@ Current Tables:
   - form_responses: ~0KB (0 records)
   - Views: ~1KB (3 views)
 
+MVP 4.0 Projected Addition:
+  - ai_conversations: ~50MB (chat history)
+  - form_embeds: ~10MB (embed tracking)
+  - analytics_cache: ~100MB (query caching)
+  - ai_insights: ~20MB (AI generated insights)
+  - external_integrations: ~1MB (configurations)
+
 Growth Projections:
-  - Next 6 months: ~50MB
-  - Next 1 year: ~200MB
-  - Next 3 years: ~2GB
+  - Next 6 months: ~200MB (with MVP 4.0)
+  - Next 1 year: ~1GB (with active usage)
+  - Next 3 years: ~10GB (enterprise scale)
 ```
 
 ## ⚠️ Important Notes

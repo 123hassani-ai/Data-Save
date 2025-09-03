@@ -2,10 +2,10 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-01-09
-- **Version:** 1.0
+- **Last Updated:** 2025-03-03 (MVP 4.0 Analysis)
+- **Version:** 2.0.0 (MVP 4.0 Business Intelligence APIs)
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/backend/api/`, `/backend/classes/ApiResponse.php`
+- **Related Files:** `/backend/api/`, `/backend/classes/ApiResponse.php`, MVP 4.0 API Extensions
 
 ## 🎯 Overview
 مرجع کامل تمام API endpoints موجود در DataSave با جزئیات کامل درخواست‌ها، پاسخ‌ها، و نمونه کدها.
@@ -16,6 +16,7 @@
 - [Settings API](#settings-api)
 - [Logs API](#logs-api)
 - [System API](#system-api)
+- [MVP 4.0 API Extensions](#mvp-40-api-extensions)
 - [Error Handling](#error-handling)
 - [نمونه کدهای Integration](#نمونه-کدهای-integration)
 
@@ -511,7 +512,248 @@ Content-Type: application/json
 }
 ```
 
-## 🚨 Error Handling
+## � MVP 4.0 API Extensions
+
+### 🎯 Business Intelligence Platform APIs
+
+#### **🤖 AI Services API**
+
+##### POST /api/ai/chat
+**Description:** چت interface برای AI Analytics Consultant
+
+**Request:**
+```json
+{
+  "message": "چند تا فرم امروز ثبت‌نام داشت؟",
+  "conversation_id": 123,
+  "context": {
+    "user_id": 1,
+    "form_id": 456
+  }
+}
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "response": "امروز ۱۵ فرم جدید ثبت‌نام شده است. این رقم نسبت به دیروز ۲۰٪ افزایش داشته.",
+    "query_executed": "SELECT COUNT(*) FROM forms WHERE DATE(created_at) = CURDATE()",
+    "visualization": {
+      "type": "number_card",
+      "value": 15,
+      "trend": "+20%"
+    },
+    "confidence_score": 0.98
+  },
+  "message": "پاسخ با موفقیت تولید شد"
+}
+```
+
+##### POST /api/ai/generate-form
+**Description:** تولید فرم با AI Form Designer Wizard
+
+**Request:**
+```json
+{
+  "description": "یک فرم ثبت‌نام دوره آموزشی با فیلدهای نام، ایمیل، شماره تماس و سطح مهارت",
+  "context": {
+    "target_audience": "دانشجویان",
+    "form_purpose": "ثبت‌نام دوره"
+  }
+}
+```
+
+#### **📊 Analytics API**
+
+##### GET /api/analytics/dashboard-data
+**Description:** داده‌های Dashboard Intelligence Hub
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "living_stats": {
+      "total_forms": 45,
+      "active_forms": 32,
+      "total_responses": 1250,
+      "today_responses": 89
+    },
+    "predictions": {
+      "tomorrow_responses": 95,
+      "confidence": 0.87,
+      "trend": "increasing"
+    },
+    "insights": [
+      {
+        "type": "recommendation",
+        "title": "بهترین زمان انتشار فرم",
+        "description": "فرم‌های منتشر شده بین ساعت ۹-۱۱ صبح ۴۰٪ بیشتر پاسخ دریافت می‌کنند"
+      }
+    ]
+  }
+}
+```
+
+##### POST /api/analytics/custom-query
+**Description:** اجرای query سفارشی با Natural Language
+
+**Request:**
+```json
+{
+  "question": "متوسط زمان تکمیل فرم‌ها در هفته گذشته چقدر بوده؟",
+  "filters": {
+    "date_range": "last_week",
+    "form_type": "all"
+  }
+}
+```
+
+#### **🌐 Form as a Service API**
+
+##### GET /api/embed/form/{id}
+**Description:** رندر فرم برای embed در وبسایت‌های خارجی
+
+**Request:**
+```http
+GET /api/embed/form/123?theme=minimal&lang=fa
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "html": "<form class='datasave-form'>...</form>",
+    "css": ".datasave-form { direction: rtl; font-family: 'Vazirmatn'; }",
+    "javascript": "window.DataSaveForm = { init: function() {...} }",
+    "config": {
+      "form_id": 123,
+      "theme": "minimal",
+      "language": "fa",
+      "rtl": true
+    }
+  }
+}
+```
+
+##### POST /api/embed/submit/{id}
+**Description:** ارسال پاسخ فرم از وبسایت خارجی
+
+**Request:**
+```json
+{
+  "form_data": {
+    "name": "علی احمدی", 
+    "email": "ali@example.com"
+  },
+  "embed_info": {
+    "domain": "example.com",
+    "page_url": "https://example.com/contact",
+    "embed_type": "javascript"
+  }
+}
+```
+
+#### **🔌 WordPress Integration API**
+
+##### POST /api/wordpress/plugin-auth
+**Description:** احراز هویت WordPress Plugin
+
+**Request:**
+```json
+{
+  "site_url": "https://mysite.com",
+  "api_key": "wp_datasave_key_123",
+  "plugin_version": "1.0.0"
+}
+```
+
+##### GET /api/wordpress/forms-list
+**Description:** لیست فرم‌ها برای WordPress Plugin
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "title": "فرم تماس با ما",
+      "shortcode": "[datasave-form id='123']",
+      "embed_code": "<script>...</script>",
+      "status": "published"
+    }
+  ]
+}
+```
+
+#### **💡 Insights API**
+
+##### GET /api/insights/patterns
+**Description:** الگوهای شناسایی شده توسط AI
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "pattern_type": "time_based",
+      "title": "پیک ساعات پاسخ‌دهی",
+      "description": "بیشتر کاربران بین ساعت ۱۴-۱۶ فرم پر می‌کنند",
+      "confidence": 0.92,
+      "recommendation": "فرم‌های مهم را در این بازه زمانی منتشر کنید"
+    }
+  ]
+}
+```
+
+### 📊 API Enhancement Summary
+
+#### **موجود (حفظ می‌شود):**
+```yaml
+✅ /api/settings/* - تنظیمات سیستم
+✅ /api/logs/* - مدیریت لاگ‌ها  
+✅ /api/system/* - اطلاعات سیستم
+```
+
+#### **جدید در MVP 4.0:**
+```yaml
+🆕 /api/ai/* - هوش مصنوعی
+  - POST /api/ai/chat
+  - POST /api/ai/generate-form
+  - POST /api/ai/analyze-data
+  - GET /api/ai/suggestions
+
+🆕 /api/analytics/* - تحلیل داده‌ها
+  - GET /api/analytics/dashboard-data
+  - POST /api/analytics/custom-query
+  - GET /api/analytics/insights
+  - GET /api/analytics/predictions
+
+🆕 /api/embed/* - فرم به عنوان سرویس
+  - GET /api/embed/form/{id}
+  - POST /api/embed/submit/{id}
+  - GET /api/embed/analytics/{id}
+  - GET /api/embed/config/{id}
+
+🆕 /api/wordpress/* - پلاگین وردپرس
+  - POST /api/wordpress/plugin-auth
+  - GET /api/wordpress/forms-list
+  - POST /api/wordpress/embed-form
+  - GET /api/wordpress/analytics
+
+🆕 /api/insights/* - بینش‌های هوشمند
+  - GET /api/insights/patterns
+  - POST /api/insights/query
+  - GET /api/insights/predictions
+  - GET /api/insights/recommendations
+```
+
+## �🚨 Error Handling
 
 ### Standard Error Response Format
 ```json

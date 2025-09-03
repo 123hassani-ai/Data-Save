@@ -40,7 +40,7 @@ class FormCanvas extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     
     return DragTarget<FormWidgetModel>(
-      onAccept: (widget) {
+      onAcceptWithDetails: (widget) {
         final provider = context.read<FormBuilderProvider>();
         // تبدیل widget به Map format که provider انتظار دارد
         final widgetData = {
@@ -99,7 +99,7 @@ class FormCanvas extends StatelessWidget {
   /// بوم با ویجت‌ها - Canvas with widgets
   Widget _buildCanvasWithWidgets(BuildContext context, FormBuilderProvider provider) {
     return DragTarget<FormWidgetModel>(
-      onAccept: (widget) {
+      onAcceptWithDetails: (widget) {
         // تبدیل widget به Map format که provider انتظار دارد
         final widgetData = {
           'id': widget.id?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),

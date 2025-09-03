@@ -2,10 +2,10 @@
 
 ## 📊 Document Information
 - **Created:** 2025-01-09
-- **Last Updated:** 2025-01-09
-- **Version:** 1.0
+- **Last Updated:** 2025-03-03 (MVP 4.0 Analysis)
+- **Version:** 2.0.0 (MVP 4.0 Business Intelligence Frontend)
 - **Maintainer:** DataSave Development Team
-- **Related Files:** `/lib/`, `/pubspec.yaml`, `/lib/main.dart`
+- **Related Files:** `/lib/`, `/pubspec.yaml`, `/lib/main.dart`, MVP 4.0 Components
 
 ## 🎯 Overview
 معماری کامل Frontend Flutter در DataSave بر اساس Clean Architecture با تمرکز بر Persian RTL support و Material Design 3.
@@ -52,7 +52,7 @@ Material Design 3:
   - Modern component design
 ```
 
-## 📁 ساختار فایل‌ها - File Structure
+## 📁 ساختار فایل‌ها - File Structure (Enhanced for MVP 4.0)
 
 ### Project Structure Overview
 ```
@@ -65,34 +65,108 @@ lib/
 │   │   └── 📄 app_constants.dart
 │   ├── 📁 logger/                    # سیستم لاگینگ
 │   │   └── 📄 logger_service.dart
-│   ├── 📁 models/                    # مدل‌های داده
-│   │   └── 📄 chat_message.dart
-│   ├── 📁 services/                  # سرویس‌های خارجی
+│   ├── 📁 models/                    # مدل‌های داده (Enhanced)
+│   │   ├── 📄 chat_message.dart
+│   │   ├── 📄 ai_conversation.dart (NEW)
+│   │   ├── 📄 analytics_data.dart (NEW)
+│   │   ├── 📄 insight.dart (NEW)
+│   │   └── � embed_config.dart (NEW)
+│   ├── �📁 services/                  # سرویس‌های خارجی (Enhanced)
 │   │   ├── 📄 api_service.dart
-│   │   └── 📄 openai_service.dart
-│   ├── 📁 theme/                     # تم و ظاهر
+│   │   ├── 📄 openai_service.dart
+│   │   ├── 📄 analytics_service.dart (NEW)
+│   │   ├── � ai_chat_service.dart (NEW)
+│   │   └── 📄 embed_service.dart (NEW)
+│   ├── �📁 theme/                     # تم و ظاهر
 │   │   ├── 📄 app_theme.dart
 │   │   └── 📄 persian_fonts.dart
-│   └── 📁 utils/                     # ابزارها
+│   └── 📁 utils/                     # ابزارها (Enhanced)
+│       ├── 📄 persian_utils.dart
+│       ├── 📄 chart_utils.dart (NEW)
+│       └── 📄 voice_utils.dart (NEW)
 │
-├── 📁 presentation/                  # لایه نمایش
-│   ├── 📁 controllers/               # کنترلرهای state
+├── 📁 presentation/                  # لایه نمایش (Enhanced)
+│   ├── 📁 controllers/               # کنترلرهای state (Enhanced)
 │   │   ├── 📄 settings_controller.dart
-│   │   └── 📄 logs_controller.dart
-│   ├── 📁 pages/                     # صفحات برنامه
-│   │   ├── 📁 home/
-│   │   ├── 📁 settings/
-│   │   └── 📁 logs/
-│   ├── 📁 routes/                    # مسیریابی
+│   │   ├── 📄 logs_controller.dart
+│   │   ├── � dashboard_controller.dart (NEW)
+│   │   ├── 📄 ai_chat_controller.dart (NEW)
+│   │   ├── 📄 form_wizard_controller.dart (NEW)
+│   │   └── 📄 analytics_controller.dart (NEW)
+│   ├── �📁 pages/                     # صفحات برنامه (Enhanced)
+│   │   ├── 📁 home/ (Enhanced to Dashboard Intelligence)
+│   │   │   ├── 📄 dashboard_page.dart
+│   │   │   └── 📄 dashboard_components/
+│   │   │       ├── 📄 living_stats_panel.dart
+│   │   │       ├── � ai_insights_widget.dart
+│   │   │       └── 📄 predictive_cards.dart
+│   │   ├── �📁 settings/
+│   │   ├── 📁 logs/
+│   │   ├── 📁 ai_chat/ (NEW)
+│   │   │   ├── 📄 ai_chat_page.dart
+│   │   │   └── � chat_components/
+│   │   ├── �📁 form_wizard/ (NEW)
+│   │   │   ├── 📄 form_wizard_page.dart
+│   │   │   └── 📄 wizard_components/
+│   │   ├── 📁 analytics/ (NEW)
+│   │   │   ├── 📄 analytics_dashboard.dart
+│   │   │   └── 📄 analytics_components/
+│   │   └── 📁 embed_preview/ (NEW)
+│   ├── 📁 routes/                    # مسیریابی (Enhanced)
 │   │   └── 📄 app_routes.dart
-│   └── 📁 widgets/                   # کامپوننت‌های UI
+│   └── 📁 widgets/                   # کامپوننت‌های UI (Enhanced)
 │       ├── 📁 shared/                # ویجت‌های مشترک
-│       └── 📁 chat/                  # ویجت‌های چت
+│       │   ├── 📄 stat_card.dart
+│       │   ├── 📄 loading_widget.dart
+│       │   ├── 📄 error_widget.dart
+│       │   ├── 📄 chart_widget.dart (NEW)
+│       │   └── � voice_input.dart (NEW)
+│       ├── �📁 chat/ (NEW)            # ویجت‌های چت AI
+│       │   ├── 📄 chat_message.dart
+│       │   ├── 📄 chat_input.dart
+│       │   └── 📄 typing_indicator.dart
+│       ├── 📁 forms/ (NEW)           # ویجت‌های فرم
+│       │   ├── 📄 ai_form_builder.dart
+│       │   ├── 📄 form_preview.dart
+│       │   └── 📄 field_widgets.dart
+│       └── 📁 analytics/ (NEW)       # ویجت‌های آنالیتیکس
+│           ├── 📄 dashboard_chart.dart
+│           ├── � insight_card.dart
+│           └── 📄 filter_panel.dart
 │
-├── 📁 widgets/                       # ویجت‌های سفارشی
+├── �📁 widgets/                       # ویجت‌های سفارشی
 │   └── 📄 font_test_widget.dart
 │
-└── 📄 main.dart                      # نقطه ورود برنامه
+└── 📄 main.dart                      # نقطه ورود برنامه (Enhanced)
+```
+
+### MVP 4.0 New Components Summary
+```yaml
+New Controllers (5):
+  - dashboard_controller.dart (Living Dashboard)
+  - ai_chat_controller.dart (AI Chat Interface) 
+  - form_wizard_controller.dart (AI Form Designer)
+  - analytics_controller.dart (Advanced Analytics)
+  - embed_controller.dart (Form as a Service)
+
+New Pages (4):
+  - ai_chat/ (Chat Data Explorer)
+  - form_wizard/ (AI Form Designer Wizard)
+  - analytics/ (Analytics Dashboard)
+  - embed_preview/ (Form Embedding Preview)
+
+New Widgets (15+):
+  - AI Chat components
+  - Form builder widgets
+  - Analytics visualizations
+  - Real-time charts
+  - Voice input interface
+
+New Services (4):
+  - analytics_service.dart
+  - ai_chat_service.dart  
+  - embed_service.dart
+  - voice_service.dart
 ```
 
 ### File Naming Conventions
@@ -111,69 +185,337 @@ Examples:
   - _isLoading (private variable)
 ```
 
-## 🎨 Presentation Layer
+## 🎨 Presentation Layer (Enhanced for MVP 4.0)
 
-### Pages Architecture
+### Pages Architecture (Enhanced)
 ```dart
-// Base Page Structure
+// Enhanced Base Page Structure
 abstract class BasePage extends StatefulWidget {
   const BasePage({super.key});
 }
 
-// Page Implementation Example
-class SettingsPage extends BasePage {
+// Dashboard Intelligence Page (Enhanced from HomePage)
+class DashboardIntelligencePage extends BasePage {
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<DashboardIntelligencePage> createState() => _DashboardIntelligencePageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _DashboardIntelligencePageState extends State<DashboardIntelligencePage> 
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    _animationController.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<SettingsController>(
+    return Consumer<DashboardController>(
       builder: (context, controller, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('تنظیمات'),
+            title: const Text('داشبورد هوشمند'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: controller.refreshData,
+              ),
+            ],
           ),
-          body: _buildBody(controller),
+          body: FadeTransition(
+            opacity: _fadeAnimation,
+            child: _buildIntelligentBody(controller),
+          ),
         );
       },
+    );
+  }
+
+  Widget _buildIntelligentBody(DashboardController controller) {
+    return CustomScrollView(
+      slivers: [
+        // Living Stats Panel
+        SliverToBoxAdapter(
+          child: LivingStatsPanel(
+            stats: controller.livingStats,
+            predictions: controller.predictions,
+          ),
+        ),
+        
+        // AI Insights Panel
+        SliverToBoxAdapter(
+          child: AIInsightsPanel(
+            insights: controller.aiInsights,
+            onInsightTap: controller.onInsightTapped,
+          ),
+        ),
+        
+        // Predictive Cards
+        SliverGrid(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return PredictiveCard(
+                prediction: controller.predictions[index],
+                animation: _fadeAnimation,
+              );
+            },
+            childCount: controller.predictions.length,
+          ),
+        ),
+      ],
     );
   }
 }
 ```
 
-### Controllers (State Management)
+### Controllers (State Management) - Enhanced
 ```dart
-// Settings Controller Example
-class SettingsController with ChangeNotifier {
+// Dashboard Intelligence Controller (Enhanced)
+class DashboardController extends BaseController {
   // Private state variables
-  String _openaiApiKey = '';
-  bool _isLoading = false;
-  String? _error;
+  LivingStats? _livingStats;
+  List<AIPrediction> _predictions = [];
+  List<AIInsight> _aiInsights = [];
+  Timer? _realTimeTimer;
   
   // Public getters
-  String get openaiApiKey => _openaiApiKey;
-  bool get isLoading => _isLoading;
-  String? get error => _error;
+  LivingStats? get livingStats => _livingStats;
+  List<AIPrediction> get predictions => _predictions;
+  List<AIInsight> get aiInsights => _aiInsights;
   
-  // Business methods
-  Future<void> loadSettings() async {
-    _setLoading(true);
+  // Real-time data updates
+  void startRealTimeUpdates() {
+    _realTimeTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _updateLivingStats(),
+    );
+  }
+  
+  Future<void> _updateLivingStats() async {
     try {
-      final settings = await ApiService.getSettings();
-      _updateSettingsFromApi(settings);
-      _error = null;
+      final newStats = await AnalyticsService.getLivingStats();
+      if (newStats != null && newStats != _livingStats) {
+        _livingStats = newStats;
+        notifyListeners();
+        
+        // Trigger micro-animations for changed values
+        _triggerValueChangeAnimations(newStats);
+      }
     } catch (e) {
-      _error = 'خطا در بارگذاری تنظیمات: ${e.toString()}';
-      LoggerService.error('SettingsController', _error!);
-    } finally {
-      _setLoading(false);
+      LoggerService.error('DashboardController', 'خطا در بروزرسانی آمار زنده: $e');
     }
   }
   
-  void _setLoading(bool loading) {
-    _isLoading = loading;
+  // AI Insights loading
+  Future<void> loadAIInsights() async {
+    setLoading(true);
+    try {
+      _aiInsights = await AIChatService.getProactiveInsights() ?? [];
+      clearError();
+    } catch (e) {
+      setError('خطا در بارگذاری بینش‌های هوشمند: ${e.toString()}');
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  @override
+  void dispose() {
+    _realTimeTimer?.cancel();
+    super.dispose();
+  }
+}
+
+// AI Chat Controller (NEW)
+class AIChatController extends BaseController {
+  List<ChatMessage> _messages = [];
+  AIConversation? _currentConversation;
+  bool _isTyping = false;
+  
+  List<ChatMessage> get messages => _messages;
+  bool get isTyping => _isTyping;
+  
+  Future<void> sendMessage(String message) async {
+    // Add user message immediately
+    _messages.add(ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      message: message,
+      isUser: true,
+      timestamp: DateTime.now(),
+    ));
+    notifyListeners();
+    
+    _setTyping(true);
+    
+    try {
+      final response = await AIChatService.sendMessage(
+        message: message,
+        conversationId: _currentConversation?.id,
+      );
+      
+      if (response != null) {
+        _messages.add(ChatMessage(
+          id: response.id,
+          message: response.message,
+          isUser: false,
+          timestamp: response.timestamp,
+          visualization: response.visualization,
+          confidence: response.confidence,
+        ));
+        
+        // Update conversation
+        _currentConversation = response.conversation;
+      }
+      
+    } catch (e) {
+      _messages.add(ChatMessage(
+        id: 'error_${DateTime.now().millisecondsSinceEpoch}',
+        message: 'متأسفم، خطایی رخ داد. لطفاً دوباره امتحان کنید.',
+        isUser: false,
+        timestamp: DateTime.now(),
+        isError: true,
+      ));
+      
+      LoggerService.error('AIChatController', 'خطا در ارسال پیام: $e');
+    } finally {
+      _setTyping(false);
+    }
+  }
+  
+  void _setTyping(bool typing) {
+    _isTyping = typing;
+    notifyListeners();
+  }
+}
+
+// Form Wizard Controller (NEW)
+class FormWizardController extends BaseController {
+  FormWizardState _wizardState = FormWizardState.description;
+  AIForm? _generatedForm;
+  String _userDescription = '';
+  Map<String, dynamic> _formContext = {};
+  
+  FormWizardState get wizardState => _wizardState;
+  AIForm? get generatedForm => _generatedForm;
+  
+  Future<void> generateFormFromDescription(String description) async {
+    _userDescription = description;
+    _wizardState = FormWizardState.generating;
+    notifyListeners();
+    
+    setLoading(true);
+    try {
+      _generatedForm = await AIChatService.generateForm(
+        description: description,
+        context: _formContext,
+      );
+      
+      if (_generatedForm != null) {
+        _wizardState = FormWizardState.preview;
+        clearError();
+      } else {
+        _wizardState = FormWizardState.error;
+        setError('نتوانستم فرم را تولید کنم. لطفاً توضیحات بیشتری ارائه دهید.');
+      }
+    } catch (e) {
+      _wizardState = FormWizardState.error;
+      setError('خطا در تولید فرم: ${e.toString()}');
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  Future<void> refineForm(String refinement) async {
+    if (_generatedForm == null) return;
+    
+    setLoading(true);
+    try {
+      _generatedForm = await AIChatService.refineForm(
+        form: _generatedForm!,
+        refinement: refinement,
+      );
+      clearError();
+    } catch (e) {
+      setError('خطا در بهبود فرم: ${e.toString()}');
+    } finally {
+      setLoading(false);
+    }
+  }
+}
+
+// Analytics Controller (NEW)
+class AnalyticsController extends BaseController {
+  Map<String, dynamic>? _dashboardData;
+  List<ChartData> _chartData = [];
+  List<AnalyticsFilter> _activeFilters = [];
+  
+  Map<String, dynamic>? get dashboardData => _dashboardData;
+  List<ChartData> get chartData => _chartData;
+  List<AnalyticsFilter> get activeFilters => _activeFilters;
+  
+  Future<void> loadDashboardData() async {
+    setLoading(true);
+    try {
+      _dashboardData = await AnalyticsService.getDashboardData();
+      _generateChartData();
+      clearError();
+    } catch (e) {
+      setError('خطا در بارگذاری داده‌های آنالیتیکس: ${e.toString()}');
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  Future<void> executeCustomQuery(String naturalLanguageQuery) async {
+    setLoading(true);
+    try {
+      final result = await AnalyticsService.executeCustomQuery(naturalLanguageQuery);
+      if (result != null) {
+        _updateVisualizationFromQuery(result);
+        clearError();
+      }
+    } catch (e) {
+      setError('خطا در اجرای query: ${e.toString()}');
+    } finally {
+      setLoading(false);
+    }
+  }
+  
+  void addFilter(AnalyticsFilter filter) {
+    _activeFilters.add(filter);
+    _applyFiltersAndRefresh();
+  }
+  
+  void removeFilter(AnalyticsFilter filter) {
+    _activeFilters.remove(filter);
+    _applyFiltersAndRefresh();
+  }
+  
+  void _generateChartData() {
+    if (_dashboardData == null) return;
+    
+    _chartData = [
+      ChartData.fromAnalytics(_dashboardData!['form_responses']),
+      ChartData.fromAnalytics(_dashboardData!['user_activity']),
+      ChartData.fromAnalytics(_dashboardData!['geographic_distribution']),
+    ];
+    
     notifyListeners();
   }
 }
